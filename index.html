@@ -131,15 +131,141 @@
                 <p>Tu carrito está vacío.</p>
             </div>
 
-            <h3>Total: <span id="total">$0</span></h3>
+            <h3>Total de productos: <span id="total">$0</span></h3>
 
             <button id="vaciar-carrito">
                 Vaciar carrito
             </button>
 
+            <hr>
+
+            <div class="datos-pedido">
+
+                <h2>🚚 ¿Cómo quieres recibir tu pedido?</h2>
+
+                <label for="tipo-entrega">
+                    Selecciona una opción:
+                </label>
+
+                <select id="tipo-entrega">
+                    <option value="domicilio">Quiero recibirlo a domicilio</option>
+                    <option value="recogida">Quiero recogerlo gratis</option>
+                </select>
+
+                <div id="datos-domicilio">
+
+                    <h3>📍 Datos para el domicilio</h3>
+
+                    <label for="nombre-cliente">Tu nombre:</label>
+                    <input
+                        type="text"
+                        id="nombre-cliente"
+                        placeholder="Escribe tu nombre">
+
+                    <label for="telefono-cliente">Teléfono de contacto:</label>
+                    <input
+                        type="tel"
+                        id="telefono-cliente"
+                        placeholder="Tu número de contacto">
+
+                    <label for="barrio-cliente">Barrio:</label>
+                    <input
+                        type="text"
+                        id="barrio-cliente"
+                        list="lista-barrios"
+                        placeholder="Escribe tu barrio">
+
+                    <datalist id="lista-barrios">
+                        <option value="La Esperanza">
+                        <option value="La Candelaria">
+                        <option value="El Pozón">
+                        <option value="La María">
+                        <option value="Olaya">
+                        <option value="El Cabrero">
+                        <option value="El Espinal">
+                        <option value="Crespo">
+                        <option value="Bocagrande">
+                        <option value="Manga">
+                        <option value="Torices">
+                    </datalist>
+
+                    <label for="direccion-cliente">
+                        Dirección exacta:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="direccion-cliente"
+                        placeholder="Calle, carrera, número de casa o apartamento">
+
+                    <label for="referencia-cliente">
+                        Indicaciones adicionales (opcional):
+                    </label>
+
+                    <textarea
+                        id="referencia-cliente"
+                        placeholder="Ejemplo: casa de rejas negras, frente al parque...">
+                    </textarea>
+
+                </div>
+
+                <div id="datos-recogida" hidden>
+
+                    <h3>🏪 Elige dónde recoger tu pedido</h3>
+
+                    <label for="punto-recogida">
+                        Punto de recogida:
+                    </label>
+
+                    <select id="punto-recogida">
+                        <option value="terminal">
+                            Sector Terminal de Transporte
+                        </option>
+
+                        <option value="bazurto">
+                            Sector Mercado de Bazurto
+                        </option>
+                    </select>
+
+                    <p>
+                        La recogida en nuestros puntos de atención
+                        no tiene costo de domicilio.
+                    </p>
+
+                </div>
+
+                <div class="resumen-pedido">
+                    <h3>Resumen de tu pedido</h3>
+
+                    <p>
+                        Valor de productos:
+                        <strong id="valor-productos">$0</strong>
+                    </p>
+
+                    <p>
+                        Domicilio:
+                        <strong id="valor-domicilio">$0</strong>
+                    </p>
+
+                    <p>
+                        Descuento:
+                        <strong id="valor-descuento">$0</strong>
+                    </p>
+
+                    <hr>
+
+                    <h3>
+                        Total a pagar:
+                        <span id="total-final">$0</span>
+                    </h3>
+                </div>
+
+            </div>
+
             <button id="hacer-pedido">
-                Realizar pedido
+                Realizar pedido por WhatsApp
             </button>
+
         </section>
 
         <section id="contacto" class="contacto">
@@ -175,7 +301,8 @@
         <p>Calidad, sabor y economía en cada bocado.</p>
     </footer>
 
+    <script src="delivery.js"></script>
     <script src="script.js"></script>
 
 </body>
-                        </html>
+            </html>
