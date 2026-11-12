@@ -1,4 +1,4 @@
-const CACHE_NAME = "mini-dreamcom-v2";
+const CACHE_NAME = "mini-dreamcom-v3";
 
 const ARCHIVOS = [
     "./",
