@@ -1,5 +1,6 @@
 /* MINI DREAMCOM DE SABORES
-   CARRITO Y PEDIDOS - VERSION 3.0
+   CARRITO, DOMICILIOS Y PEDIDOS
+   VERSION 4.0
 */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -24,23 +25,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalFinal = document.getElementById("total-final");
 
     const WHATSAPP = "573023561621";
-    const CLAVE = "miniDreamcomCarritoV3";
+    const CLAVE = "miniDreamcomCarritoV4";
 
     let carrito = [];
 
-    // Comprobar que la configuración de domicilios esté cargada
     if (typeof CONFIG_DOMICILIOS === "undefined") {
-        alert("No se encontró delivery.js. Revisa que esté en el repositorio.");
+        alert("No se encontró delivery.js. Revisa que esté guardado en el repositorio.");
         return;
     }
 
-    // Hacer que el cliente pueda elegir el punto
-    // tanto para domicilio como para recogida.
+    // Mostrar siempre el punto de atención elegido
     const datosRecogida = document.getElementById("datos-recogida");
     const datosPedido = document.querySelector(".datos-pedido");
 
     if (datosRecogida && datosPedido && puntoRecogida) {
-
         const seccionPunto = document.createElement("div");
         seccionPunto.id = "seleccion-punto";
 
@@ -48,11 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
             seccionPunto.appendChild(datosRecogida.firstChild);
         }
 
-        datosPedido.insertBefore(
-            seccionPunto,
-            datosDomicilio
-        );
-
+        datosPedido.insertBefore(seccionPunto, datosDomicilio);
         datosRecogida.remove();
     }
 
@@ -102,12 +96,13 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-    // Buscar la información del barrio
+    // Buscar barrio según el punto seleccionado
     function buscarBarrio(nombre) {
-        const barrios = CONFIG_DOMICILIOS.barrios || {};
+        const punto = puntoRecogida.value;
+        const zonas = CONFIG_DOMICILIOS.zonasPorPunto[punto] || {};
         const buscado = normalizar(nombre);
 
-        return Object.entries(barrios).find(([nombreBarrio]) =>
+        return Object.entries(zonas).find(([nombreBarrio]) =>
             normalizar(nombreBarrio) === buscado
         );
     }
@@ -131,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 tarifa: 0,
                 descuento: 0,
                 pendiente: true,
-                zona: "Barrio pendiente"
+                zona: "Falta seleccionar el barrio"
             };
         }
 
@@ -147,11 +142,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const informacion = encontrado[1];
-        const zona = informacion.zona;
         const tarifas = CONFIG_DOMICILIOS.tarifas || {};
-        const tarifa = tarifas[zona];
+        const tarifa = tarifas[informacion.zona];
 
-        if (!zona || !Number.isFinite(tarifa)) {
+        if (!Number.isFinite(tarifa)) {
             return {
                 tarifa: 0,
                 descuento: 0,
@@ -160,29 +154,24 @@ document.addEventListener("DOMContentLoaded", () => {
             };
         }
 
-        const descuentoSolicitado =
-            informacion.descuento ||
-            CONFIG_DOMICILIOS.descuentoProvisional ||
-            0;
-
-        const descuento = Math.min(tarifa, descuentoSolicitado);
+        // El descuento se aplica una sola vez al domicilio
+        const descuento = Number.isFinite(informacion.descuento)
+            ? Math.min(tarifa, informacion.descuento)
+            : 0;
 
         return {
-            tarifa: tarifa,
-            descuento: descuento,
+            tarifa,
+            descuento,
             pendiente: false,
-            zona: zona
+            zona: informacion.zona
         };
     }
 
-    // Mostrar el resumen de compra
+    // Actualizar resumen de compra
     function actualizarResumen() {
 
         const subtotal = calcularProductos();
         const entrega = calcularEntrega();
-
-        const domicilio = entrega.tarifa;
-        const descuento = entrega.descuento;
 
         if (valorProductos) {
             valorProductos.textContent = dinero(subtotal);
@@ -191,21 +180,17 @@ document.addEventListener("DOMContentLoaded", () => {
         if (valorDomicilio) {
             valorDomicilio.textContent = entrega.pendiente
                 ? "Por confirmar"
-                : dinero(domicilio);
+                : dinero(entrega.tarifa);
         }
 
         if (valorDescuento) {
-            valorDescuento.textContent = dinero(descuento);
+            valorDescuento.textContent = dinero(entrega.descuento);
         }
 
         if (totalFinal) {
-            if (entrega.pendiente) {
-                totalFinal.textContent = "Por confirmar";
-            } else {
-                totalFinal.textContent = dinero(
-                    subtotal + domicilio - descuento
-                );
-            }
+            totalFinal.textContent = entrega.pendiente
+                ? "Por confirmar"
+                : dinero(subtotal + entrega.tarifa - entrega.descuento);
         }
     }
 
@@ -310,8 +295,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 existente.cantidad++;
             } else {
                 carrito.push({
-                    nombre: nombre,
-                    precio: precio,
+                    nombre,
+                    precio,
                     cantidad: 1
                 });
             }
@@ -330,8 +315,9 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarResumen();
     });
 
-    // Actualizar cuando se escriba el barrio
+    // Actualizar cálculos cuando cambien los datos
     barrioCliente.addEventListener("input", actualizarResumen);
+    puntoRecogida.addEventListener("change", actualizarResumen);
 
     // Vaciar carrito
     botonVaciar.onclick = () => {
@@ -351,7 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
-    // Realizar pedido por WhatsApp
+    // Preparar pedido para WhatsApp
     botonPedido.onclick = () => {
 
         if (carrito.length === 0) {
@@ -368,12 +354,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const direccion = document.getElementById("direccion-cliente").value.trim();
         const referencia = document.getElementById("referencia-cliente").value.trim();
 
-        if (esDomicilio) {
-
-            if (!nombre || !barrio || !direccion) {
-                alert("Completa tu nombre, barrio y dirección para continuar.");
-                return;
-            }
+        if (esDomicilio && (!nombre || !barrio || !direccion)) {
+            alert("Completa tu nombre, barrio y dirección para continuar.");
+            return;
         }
 
         const puntos = CONFIG_DOMICILIOS.puntos || [];
@@ -390,29 +373,23 @@ document.addEventListener("DOMContentLoaded", () => {
         const subtotal = calcularProductos();
         const entrega = calcularEntrega();
 
-        let suma = 0;
+        if (esDomicilio && entrega.pendiente) {
+            alert("El domicilio de este barrio está pendiente de confirmar. Comunícate con nosotros por WhatsApp para conocer la tarifa.");
+        }
 
         const productos = carrito.map(producto => {
-
             const parcial = producto.precio * producto.cantidad;
-            suma += parcial;
 
             return "• " + producto.nombre +
                 " x" + producto.cantidad +
                 " = " + dinero(parcial);
-
         }).join("\n");
 
         let mensaje =
             "¡Hola! Quiero realizar un pedido en MINI DREAMCOM DE SABORES.\n\n";
 
-        if (nombre) {
-            mensaje += "Nombre: " + nombre + "\n";
-        }
-
-        if (telefono) {
-            mensaje += "Teléfono: " + telefono + "\n";
-        }
+        if (nombre) mensaje += "Nombre: " + nombre + "\n";
+        if (telefono) mensaje += "Teléfono: " + telefono + "\n";
 
         mensaje += "\nPRODUCTOS:\n" + productos;
 
@@ -433,17 +410,15 @@ document.addEventListener("DOMContentLoaded", () => {
             if (entrega.pendiente) {
                 mensaje += "\nDomicilio: pendiente de confirmar";
                 mensaje += "\nTotal de productos: " + dinero(subtotal);
-                mensaje += "\nTOTAL FINAL: pendiente de confirmar tarifa";
+                mensaje += "\nTOTAL FINAL: pendiente de confirmar domicilio";
             } else {
                 mensaje += "\nDomicilio: " + dinero(entrega.tarifa);
-                mensaje += "\nDescuento: " + dinero(entrega.descuento);
-
-                mensaje += "\nTOTAL FINAL: " +
+                mensaje += "\nDescuento de domicilio: " + dinero(entrega.descuento);
+                mensaje += "\nTOTAL A PAGAR: " +
                     dinero(subtotal + entrega.tarifa - entrega.descuento);
             }
 
         } else {
-
             mensaje += "\nDomicilio: $0";
             mensaje += "\nTOTAL A PAGAR: " + dinero(subtotal);
         }
@@ -461,6 +436,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     actualizar();
 
-    console.log("Mini Dreamcom: carrito y pedidos listos - VERSION 3.0");
+    console.log("Mini Dreamcom: carrito y domicilios listos - VERSION 4.0");
 
 });
