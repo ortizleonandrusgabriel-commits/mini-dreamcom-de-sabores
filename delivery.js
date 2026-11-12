@@ -1,18 +1,21 @@
 /* MINI DREAMCOM DE SABORES
-   DOMICILIOS INDEPENDIENTES
-   TERMINAL Y BAZURTO - VERSION 3.0
+   CONFIGURACIÓN DE DOMICILIOS
+   TERMINAL Y BAZURTO
 */
 
 const CONFIG_DOMICILIOS = {
 
-    // Tarifas provisionales
+    // Tarifas de domicilio
     tarifas: {
         cercana: 3000,
         intermedia: 5000,
         lejana: 7000
     },
 
-    // Puntos que puede elegir el cliente
+    // Descuento aplicado una sola vez al domicilio
+    descuentoProvisional: 1500,
+
+    // Puntos de atención
     puntos: [
         {
             id: "terminal",
@@ -24,34 +27,34 @@ const CONFIG_DOMICILIOS = {
         }
     ],
 
-    // Clasificación independiente por punto
+    // Barrios y tarifas según el punto de atención
     zonasPorPunto: {
 
         terminal: {
 
             "La Esperanza": {
                 zona: "cercana",
-                descuento: 1000
+                descuento: 1500
             },
 
             "La Candelaria": {
                 zona: "cercana",
-                descuento: 1000
+                descuento: 1500
             },
 
             "El Pozón": {
                 zona: "intermedia",
-                descuento: 1000
+                descuento: 1500
             },
 
             "La María": {
                 zona: "cercana",
-                descuento: 1000
+                descuento: 1500
             },
 
             "Olaya": {
                 zona: "cercana",
-                descuento: 1000
+                descuento: 1500
             },
 
             "El Cabrero": {
@@ -80,6 +83,11 @@ const CONFIG_DOMICILIOS = {
             },
 
             "Torices": {
+                zona: "lejana",
+                descuento: 0
+            },
+
+            "Marbella": {
                 zona: "lejana",
                 descuento: 0
             }
@@ -88,65 +96,66 @@ const CONFIG_DOMICILIOS = {
         bazurto: {
 
             "La Esperanza": {
-                zona: "",
-                descuento: 1000
+                zona: "cercana",
+                descuento: 1500
             },
 
             "La Candelaria": {
-                zona: "",
-                descuento: 1000
+                zona: "cercana",
+                descuento: 1500
             },
 
             "El Pozón": {
-                zona: "",
-                descuento: 1000
+                zona: "intermedia",
+                descuento: 1500
             },
 
             "La María": {
-                zona: "",
-                descuento: 1000
+                zona: "cercana",
+                descuento: 1500
             },
 
             "Olaya": {
-                zona: "",
-                descuento: 1000
+                zona: "cercana",
+                descuento: 1500
             },
 
             "El Cabrero": {
-                zona: "",
+                zona: "lejana",
                 descuento: 0
             },
 
             "El Espinal": {
-                zona: "",
+                zona: "lejana",
                 descuento: 0
             },
 
             "Crespo": {
-                zona: "",
+                zona: "lejana",
                 descuento: 0
             },
 
             "Bocagrande": {
-                zona: "",
+                zona: "lejana",
                 descuento: 0
             },
 
             "Manga": {
-                zona: "",
+                zona: "lejana",
                 descuento: 0
             },
 
             "Torices": {
-                zona: "",
+                zona: "lejana",
+                descuento: 0
+            },
+
+            "Marbella": {
+                zona: "lejana",
                 descuento: 0
             }
         }
-    },
-
-    descuentoProvisional: 1000
+    }
 };
 
-console.log(
-    "Mini Dreamcom: zonas independientes de Terminal y Bazurto cargadas."
-);
+console.log("Mini Dreamcom: domicilios configurados correctamente.");
