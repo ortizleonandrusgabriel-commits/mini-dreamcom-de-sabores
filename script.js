@@ -437,7 +437,5 @@ document.addEventListener("DOMContentLoaded", () => {
     actualizar();
 
     console.log("Mini Dreamcom: carrito y domicilios listos - VERSION 4.0");
-.producto h3 {
-    font-weight: 700;
-}
+
 });
