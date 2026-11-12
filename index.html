@@ -57,13 +57,16 @@
 
         <section id="menu" class="menu">
             <h2>Nuestro menú</h2>
-            <p>¡Elige tus favoritos!</p>
+            <p>¡Pequeños antojos para grandes momentos!</p>
 
             <div class="productos">
 
+                <!-- PRODUCTOS ANTERIORES -->
+
                 <article class="producto">
-                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500"
-                         alt="Mini hamburguesa">
+                    <img
+                        src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500"
+                        alt="Mini hamburguesa">
 
                     <h3>Mini hamburguesa</h3>
                     <p>Carne, queso, vegetales y salsas.</p>
@@ -77,8 +80,9 @@
                 </article>
 
                 <article class="producto">
-                    <img src="https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500"
-                         alt="Mini sándwich">
+                    <img
+                        src="https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500"
+                        alt="Mini sándwich">
 
                     <h3>Mini sándwich</h3>
                     <p>Pan suave con deliciosos ingredientes.</p>
@@ -92,8 +96,9 @@
                 </article>
 
                 <article class="producto">
-                    <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500"
-                         alt="Mini pizza">
+                    <img
+                        src="https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500"
+                        alt="Mini pizza">
 
                     <h3>Mini pizza</h3>
                     <p>Queso, salsa y mucho sabor.</p>
@@ -107,8 +112,9 @@
                 </article>
 
                 <article class="producto">
-                    <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500"
-                         alt="Empanadas">
+                    <img
+                        src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500"
+                        alt="Mini empanadas">
 
                     <h3>Mini empanadas</h3>
                     <p>Crujientes y llenas de sabor.</p>
@@ -121,8 +127,108 @@
                     </button>
                 </article>
 
+                <!-- NUEVOS PRODUCTOS -->
+
+                <article class="producto">
+                    <img
+                        src="https://images.unsplash.com/photo-1612392062631-94dd858ba88f?w=500"
+                        alt="Mini perro caliente">
+
+                    <h3>Mini perro caliente</h3>
+                    <p>Salchicha, pan, salsas y deliciosos acompañamientos.</p>
+                    <strong>$5.000</strong>
+
+                    <button class="agregar"
+                        data-nombre="Mini perro caliente"
+                        data-precio="5000">
+                        Agregar al carrito
+                    </button>
+                </article>
+
+                <article class="producto">
+                    <img
+                        src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500"
+                        alt="Mini arepa de huevo">
+
+                    <h3>Mini arepa de huevo</h3>
+                    <p>Una pequeña delicia tradicional de la costa.</p>
+                    <strong>$4.000</strong>
+
+                    <button class="agregar"
+                        data-nombre="Mini arepa de huevo"
+                        data-precio="4000">
+                        Agregar al carrito
+                    </button>
+                </article>
+
+                <article class="producto">
+                    <img
+                        src="https://images.unsplash.com/photo-1547592180-85f173990554?w=500"
+                        alt="Mini patacones">
+
+                    <h3>Mini patacones</h3>
+                    <p>Crujientes patacones con acompañamiento.</p>
+                    <strong>$5.000</strong>
+
+                    <button class="agregar"
+                        data-nombre="Mini patacones"
+                        data-precio="5000">
+                        Agregar al carrito
+                    </button>
+                </article>
+
+                <article class="producto">
+                    <img
+                        src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=500"
+                        alt="Mini postre">
+
+                    <h3>Mini postres</h3>
+                    <p>Postres cremosos servidos en vasitos individuales.</p>
+                    <strong>$5.000</strong>
+
+                    <button class="agregar"
+                        data-nombre="Mini postres"
+                        data-precio="5000">
+                        Agregar al carrito
+                    </button>
+                </article>
+
+                <article class="producto">
+                    <img
+                        src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500"
+                        alt="Mini deditos de queso">
+
+                    <h3>Mini deditos de queso</h3>
+                    <p>Masa doradita con un delicioso relleno de queso.</p>
+                    <strong>$2.000</strong>
+
+                    <button class="agregar"
+                        data-nombre="Mini deditos de queso"
+                        data-precio="2000">
+                        Agregar al carrito
+                    </button>
+                </article>
+
+                <article class="producto">
+                    <img
+                        src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500"
+                        alt="Mini pinchos">
+
+                    <h3>Mini pinchos</h3>
+                    <p>Pequeños pinchos con deliciosos ingredientes.</p>
+                    <strong>$6.000</strong>
+
+                    <button class="agregar"
+                        data-nombre="Mini pinchos"
+                        data-precio="6000">
+                        Agregar al carrito
+                    </button>
+                </article>
+
             </div>
         </section>
+
+        <!-- CARRITO Y PEDIDO -->
 
         <section id="carrito" class="carrito">
             <h2>🛒 Tu carrito de compras</h2>
@@ -148,8 +254,12 @@
                 </label>
 
                 <select id="tipo-entrega">
-                    <option value="domicilio">Quiero recibirlo a domicilio</option>
-                    <option value="recogida">Quiero recogerlo gratis</option>
+                    <option value="domicilio">
+                        Quiero recibirlo a domicilio
+                    </option>
+                    <option value="recogida">
+                        Quiero recogerlo gratis
+                    </option>
                 </select>
 
                 <div id="datos-domicilio">
@@ -162,7 +272,9 @@
                         id="nombre-cliente"
                         placeholder="Escribe tu nombre">
 
-                    <label for="telefono-cliente">Teléfono de contacto:</label>
+                    <label for="telefono-cliente">
+                        Teléfono de contacto:
+                    </label>
                     <input
                         type="tel"
                         id="telefono-cliente"
@@ -204,7 +316,7 @@
 
                     <textarea
                         id="referencia-cliente"
-                        placeholder="Ejemplo: casa de rejas negras, frente al parque...">
+                        placeholder="Indicaciones para encontrar tu dirección">
                     </textarea>
 
                 </div>
@@ -214,7 +326,7 @@
                     <h3>🏪 Elige dónde recoger tu pedido</h3>
 
                     <label for="punto-recogida">
-                        Punto de recogida:
+                        Punto de atención:
                     </label>
 
                     <select id="punto-recogida">
@@ -268,6 +380,8 @@
 
         </section>
 
+        <!-- CONTACTO -->
+
         <section id="contacto" class="contacto">
             <h2>¡Estamos para atenderte!</h2>
 
@@ -305,4 +419,4 @@
     <script src="script.js"></script>
 
 </body>
-            </html>
+    </html>
