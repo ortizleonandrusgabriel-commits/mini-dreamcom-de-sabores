@@ -1,10 +1,11 @@
 /* MINI DREAMCOM DE SABORES
    CARRITO, DOMICILIOS Y PEDIDOS
-   VERSION 5.3 - SUPABASE CORREGIDO
+   VERSION 5.4 - CORREGIDO Y MEJORADO
 */
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    // ELEMENTOS DE LA PÁGINA
     const botonesAgregar = document.querySelectorAll(".agregar");
     const listaCarrito = document.getElementById("lista-carrito");
     const cantidad = document.getElementById("cantidad");
@@ -29,27 +30,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let carrito = [];
 
+    // COMPROBAR ELEMENTOS PRINCIPALES
+    if (!listaCarrito || !cantidad || !total) {
+        console.error("Faltan elementos del carrito en index.html.");
+        return;
+    }
+
+    if (
+        !tipoEntrega ||
+        !datosDomicilio ||
+        !barrioCliente ||
+        !puntoRecogida
+    ) {
+        console.error("Faltan elementos de entrega en index.html.");
+        return;
+    }
+
     if (typeof CONFIG_DOMICILIOS === "undefined") {
         alert("No se encontró delivery.js. Revisa que esté guardado en el repositorio.");
         return;
     }
 
-    // Conexión con Supabase
+    // CONEXIÓN CON SUPABASE
     const supabaseClient = window.supabaseClient || null;
-   
-   .console.log("Prueba de Supabase:", window.supabase);
-console.log("Prueba del cliente:", window.supabaseClient);
-console.log("Cliente recibido:", supabaseClient);
+
+    console.log("Librería Supabase:", window.supabase);
+    console.log("Cliente Supabase:", window.supabaseClient);
+    console.log("Cliente recibido:", supabaseClient);
 
     if (!supabaseClient) {
         console.error("No se encontró la conexión con Supabase.");
     }
 
-    // Mostrar siempre el punto de atención elegido
+    // ORGANIZAR PUNTO DE RECOGIDA
     const datosRecogida = document.getElementById("datos-recogida");
     const datosPedido = document.querySelector(".datos-pedido");
 
-    if (datosRecogida && datosPedido && puntoRecogida) {
+    if (datosRecogida && datosPedido) {
         const seccionPunto = document.createElement("div");
         seccionPunto.id = "seleccion-punto";
 
@@ -61,8 +78,9 @@ console.log("Cliente recibido:", supabaseClient);
         datosRecogida.remove();
     }
 
+    // FUNCIONES GENERALES
     function dinero(valor) {
-        return "$" + Number(valor).toLocaleString("es-CO");
+        return "$" + Number(valor || 0).toLocaleString("es-CO");
     }
 
     function normalizar(texto) {
@@ -73,7 +91,7 @@ console.log("Cliente recibido:", supabaseClient);
             .replace(/[\u0300-\u036f]/g, "");
     }
 
-    // Recuperar carrito guardado
+    // RECUPERAR CARRITO
     try {
         const guardado = JSON.parse(localStorage.getItem(CLAVE));
 
@@ -81,21 +99,26 @@ console.log("Cliente recibido:", supabaseClient);
             carrito = guardado.filter(producto =>
                 producto &&
                 typeof producto.nombre === "string" &&
-                Number.isFinite(producto.precio) &&
-                Number.isInteger(producto.cantidad) &&
-                producto.precio > 0 &&
-                producto.cantidad > 0
-            );
+                Number.isFinite(Number(producto.precio)) &&
+                Number.isInteger(Number(producto.cantidad)) &&
+                Number(producto.precio) > 0 &&
+                Number(producto.cantidad) > 0
+            ).map(producto => ({
+                nombre: producto.nombre,
+                precio: Number(producto.precio),
+                cantidad: Number(producto.cantidad)
+            }));
         }
     } catch (error) {
         carrito = [];
+        console.error("No se pudo recuperar el carrito:", error);
     }
 
     function guardar() {
         try {
             localStorage.setItem(CLAVE, JSON.stringify(carrito));
         } catch (error) {
-            console.log("No se pudo guardar el carrito.");
+            console.error("No se pudo guardar el carrito:", error);
         }
     }
 
@@ -107,10 +130,10 @@ console.log("Cliente recibido:", supabaseClient);
         );
     }
 
-    // Buscar barrio según el punto seleccionado
+    // BUSCAR BARRIO
     function buscarBarrio(nombre) {
         const punto = puntoRecogida.value;
-        const zonas = CONFIG_DOMICILIOS.zonasPorPunto[punto] || {};
+        const zonas = CONFIG_DOMICILIOS.zonasPorPunto?.[punto] || {};
         const buscado = normalizar(nombre);
 
         return Object.entries(zonas).find(([nombreBarrio]) =>
@@ -118,7 +141,7 @@ console.log("Cliente recibido:", supabaseClient);
         );
     }
 
-    // Calcular domicilio y descuento
+    // CALCULAR DOMICILIO
     function calcularEntrega() {
 
         if (tipoEntrega.value === "recogida") {
@@ -177,7 +200,7 @@ console.log("Cliente recibido:", supabaseClient);
         };
     }
 
-    // Actualizar resumen de compra
+    // ACTUALIZAR RESUMEN
     function actualizarResumen() {
 
         const subtotal = calcularProductos();
@@ -204,7 +227,7 @@ console.log("Cliente recibido:", supabaseClient);
         }
     }
 
-    // Actualizar carrito
+    // ACTUALIZAR CARRITO
     function actualizar() {
 
         listaCarrito.innerHTML = "";
@@ -234,6 +257,7 @@ console.log("Cliente recibido:", supabaseClient);
             const controles = document.createElement("div");
 
             const restar = document.createElement("button");
+            restar.type = "button";
             restar.textContent = "−";
 
             restar.onclick = () => {
@@ -250,6 +274,7 @@ console.log("Cliente recibido:", supabaseClient);
             numero.textContent = " " + producto.cantidad + " ";
 
             const sumar = document.createElement("button");
+            sumar.type = "button";
             sumar.textContent = "+";
 
             sumar.onclick = () => {
@@ -258,6 +283,7 @@ console.log("Cliente recibido:", supabaseClient);
             };
 
             const eliminar = document.createElement("button");
+            eliminar.type = "button";
             eliminar.textContent = "Eliminar";
 
             eliminar.onclick = () => {
@@ -284,10 +310,14 @@ console.log("Cliente recibido:", supabaseClient);
         guardar();
     }
 
-    // Agregar productos
+    // AGREGAR PRODUCTOS
     botonesAgregar.forEach(boton => {
 
-        boton.onclick = () => {
+        boton.type = "button";
+
+        boton.addEventListener("click", (evento) => {
+
+            evento.preventDefault();
 
             const nombre = boton.dataset.nombre;
             const precio = Number(boton.dataset.precio);
@@ -312,10 +342,14 @@ console.log("Cliente recibido:", supabaseClient);
             }
 
             actualizar();
-        };
+
+            console.log("Producto agregado:", nombre);
+        });
     });
 
-    // Cambiar entre domicilio y recogida
+    console.log("Botones de productos encontrados:", botonesAgregar.length);
+
+    // CAMBIAR DOMICILIO O RECOGIDA
     tipoEntrega.addEventListener("change", () => {
 
         const esDomicilio = tipoEntrega.value === "domicilio";
@@ -325,211 +359,220 @@ console.log("Cliente recibido:", supabaseClient);
         actualizarResumen();
     });
 
-    // Actualizar cálculos cuando cambien los datos
     barrioCliente.addEventListener("input", actualizarResumen);
     puntoRecogida.addEventListener("change", actualizarResumen);
 
-    // Vaciar carrito
-    botonVaciar.onclick = () => {
+    // VACIAR CARRITO
+    if (botonVaciar) {
+        botonVaciar.type = "button";
 
-        if (carrito.length === 0) return;
+        botonVaciar.onclick = () => {
 
-        if (confirm("¿Deseas vaciar tu carrito?")) {
-            carrito = [];
-            actualizar();
-        }
-    };
+            if (carrito.length === 0) return;
 
-    // Ir al carrito
-    botonVerCarrito.onclick = () => {
-        document.getElementById("carrito").scrollIntoView({
-            behavior: "smooth"
-        });
-    };
-
-    // Preparar pedido, enviarlo a WhatsApp y guardarlo en Supabase
-    botonPedido.onclick = async (evento) => {
-
-        evento.preventDefault();
-
-        if (carrito.length === 0) {
-            alert("Primero agrega productos a tu carrito.");
-            return;
-        }
-
-        const modalidad = tipoEntrega.value;
-        const esDomicilio = modalidad === "domicilio";
-
-        const nombre = document.getElementById("nombre-cliente").value.trim();
-        const telefono = document.getElementById("telefono-cliente").value.trim();
-        const barrio = barrioCliente.value.trim();
-        const direccion = document.getElementById("direccion-cliente").value.trim();
-        const referencia = document.getElementById("referencia-cliente").value.trim();
-
-        if (esDomicilio && (!nombre || !barrio || !direccion)) {
-            alert("Completa tu nombre, barrio y dirección para continuar.");
-            return;
-        }
-
-        const puntos = CONFIG_DOMICILIOS.puntos || [];
-
-        const puntoElegido = puntos.find(
-            punto => punto.id === puntoRecogida.value
-        );
-
-        if (!puntoElegido) {
-            alert("Selecciona un punto de atención válido.");
-            return;
-        }
-
-        const subtotal = calcularProductos();
-        const entrega = calcularEntrega();
-
-        if (esDomicilio && entrega.pendiente) {
-            alert("El domicilio de este barrio está pendiente de confirmar. Comunícate con nosotros por WhatsApp para conocer la tarifa.");
-        }
-
-        const productosMensaje = carrito.map(producto => {
-            const parcial = producto.precio * producto.cantidad;
-
-            return "• " + producto.nombre +
-                " x" + producto.cantidad +
-                " = " + dinero(parcial);
-        }).join("\n");
-
-        let mensaje =
-            "¡Hola! Quiero realizar un pedido en MINI DREAMCOM DE SABORES.\n\n";
-
-        if (nombre) mensaje += "Nombre: " + nombre + "\n";
-        if (telefono) mensaje += "Teléfono: " + telefono + "\n";
-
-        mensaje += "\nPRODUCTOS:\n" + productosMensaje;
-
-        mensaje += "\n\nMODALIDAD: " +
-            (esDomicilio ? "Domicilio" : "Recogida gratuita");
-
-        mensaje += "\nPUNTO ELEGIDO: " + puntoElegido.nombre;
-
-        if (esDomicilio) {
-
-            mensaje += "\nBarrio: " + barrio;
-            mensaje += "\nDirección: " + direccion;
-
-            if (referencia) {
-                mensaje += "\nIndicaciones: " + referencia;
+            if (confirm("¿Deseas vaciar tu carrito?")) {
+                carrito = [];
+                actualizar();
             }
-
-            if (entrega.pendiente) {
-                mensaje += "\nDomicilio: pendiente de confirmar";
-                mensaje += "\nTotal de productos: " + dinero(subtotal);
-                mensaje += "\nTOTAL FINAL: pendiente de confirmar domicilio";
-            } else {
-                mensaje += "\nDomicilio: " + dinero(entrega.tarifa);
-                mensaje += "\nDescuento de domicilio: " + dinero(entrega.descuento);
-                mensaje += "\nTOTAL A PAGAR: " +
-                    dinero(subtotal + entrega.tarifa - entrega.descuento);
-            }
-
-        } else {
-            mensaje += "\nDomicilio: $0";
-            mensaje += "\nTOTAL A PAGAR: " + dinero(subtotal);
-        }
-
-        mensaje += "\n\n¡Muchas gracias!";
-
-        const enlace = "https://wa.me/" + WHATSAPP +
-            "?text=" + encodeURIComponent(mensaje);
-
-        // Preparar información para Supabase
-        // Los nombres coinciden con las columnas reales de public.Pedidos
-        const pedido = {
-            nombre_cliente: nombre || null,
-            "Teléfono": telefono || null,
-
-            "Productos": {
-                items: carrito.map(producto => ({
-                    nombre: producto.nombre,
-                    precio: producto.precio,
-                    cantidad: producto.cantidad
-                })),
-                punto_recogida: puntoElegido.nombre,
-                referencia: referencia || null,
-                zona: entrega.zona,
-                tarifa_domicilio: entrega.pendiente
-                    ? null
-                    : entrega.tarifa,
-                descuento: entrega.descuento
-            },
-
-            "Modalidad": modalidad,
-            "Barrio": esDomicilio ? barrio : null,
-            "Dirección": esDomicilio ? direccion : null,
-
-            "Total": entrega.pendiente
-                ? null
-                : subtotal + entrega.tarifa - entrega.descuento,
-
-            "Estado": "Pendiente"
         };
+    }
 
-        // Comprobar conexión con Supabase
-        if (!supabaseClient) {
-            alert("No se encontró la conexión con Supabase. El pedido no se guardó.");
-            window.open(enlace, "_blank");
-            return;
-        }
+    // VER CARRITO
+    if (botonVerCarrito) {
+        botonVerCarrito.type = "button";
 
-        botonPedido.disabled = true;
-        botonPedido.textContent = "Guardando pedido...";
+        botonVerCarrito.onclick = (evento) => {
+            evento.preventDefault();
 
-        // Abrir WhatsApp durante la acción del usuario
-        window.open(enlace, "_blank");
+            document.getElementById("carrito")?.scrollIntoView({
+                behavior: "smooth"
+            });
+        };
+    }
 
-        try {
+    // REALIZAR PEDIDO
+    if (botonPedido) {
 
-            // Guardar pedido en Supabase
-            const { error } = await supabaseClient
-                .from("Pedidos")
-                .insert([pedido]);
+        botonPedido.onclick = async (evento) => {
 
-            if (error) {
-                console.error("Error al guardar el pedido:", error);
+            evento.preventDefault();
 
-                alert(
-                    "WhatsApp se abrió, pero no se pudo guardar el pedido.\n\n" +
-                    "Detalle del error:\n" + error.message
-                );
-
-            } else {
-
-                alert(
-                    "¡Pedido registrado correctamente!\n\n" +
-                    "Tu pedido quedó guardado en la base de datos."
-                );
+            if (carrito.length === 0) {
+                alert("Primero agrega productos a tu carrito.");
+                return;
             }
 
-        } catch (error) {
+            const modalidad = tipoEntrega.value;
+            const esDomicilio = modalidad === "domicilio";
 
-            console.error("Error de conexión con Supabase:", error);
+            const nombre = document.getElementById("nombre-cliente")?.value.trim() || "";
+            const telefono = document.getElementById("telefono-cliente")?.value.trim() || "";
+            const barrio = barrioCliente.value.trim();
+            const direccion = document.getElementById("direccion-cliente")?.value.trim() || "";
+            const referencia = document.getElementById("referencia-cliente")?.value.trim() || "";
 
-            alert(
-                "Ocurrió un problema al guardar el pedido:\n\n" +
-                error.message
+            if (esDomicilio && (!nombre || !barrio || !direccion)) {
+                alert("Completa tu nombre, barrio y dirección para continuar.");
+                return;
+            }
+
+            const puntos = CONFIG_DOMICILIOS.puntos || [];
+
+            const puntoElegido = puntos.find(
+                punto => punto.id === puntoRecogida.value
             );
 
-        } finally {
+            if (!puntoElegido) {
+                alert("Selecciona un punto de atención válido.");
+                return;
+            }
 
-            botonPedido.disabled = false;
-            botonPedido.textContent = "Realizar pedido por WhatsApp";
+            const subtotal = calcularProductos();
+            const entrega = calcularEntrega();
 
-        }
-    };
+            if (esDomicilio && entrega.pendiente) {
+                alert("El domicilio de este barrio está pendiente de confirmar. Comunícate con nosotros por WhatsApp para conocer la tarifa.");
+            }
 
-    // Estado inicial
+            const productosMensaje = carrito.map(producto => {
+                const parcial = producto.precio * producto.cantidad;
+
+                return "• " + producto.nombre +
+                    " x" + producto.cantidad +
+                    " = " + dinero(parcial);
+            }).join("\n");
+
+            let mensaje =
+                "¡Hola! Quiero realizar un pedido en MINI DREAMCOM DE SABORES.\n\n";
+
+            if (nombre) mensaje += "Nombre: " + nombre + "\n";
+            if (telefono) mensaje += "Teléfono: " + telefono + "\n";
+
+            mensaje += "\nPRODUCTOS:\n" + productosMensaje;
+
+            mensaje += "\n\nMODALIDAD: " +
+                (esDomicilio ? "Domicilio" : "Recogida gratuita");
+
+            mensaje += "\nPUNTO ELEGIDO: " + puntoElegido.nombre;
+
+            if (esDomicilio) {
+
+                mensaje += "\nBarrio: " + barrio;
+                mensaje += "\nDirección: " + direccion;
+
+                if (referencia) {
+                    mensaje += "\nIndicaciones: " + referencia;
+                }
+
+                if (entrega.pendiente) {
+                    mensaje += "\nDomicilio: pendiente de confirmar";
+                    mensaje += "\nTotal de productos: " + dinero(subtotal);
+                    mensaje += "\nTOTAL FINAL: pendiente de confirmar domicilio";
+                } else {
+                    mensaje += "\nDomicilio: " + dinero(entrega.tarifa);
+                    mensaje += "\nDescuento de domicilio: " + dinero(entrega.descuento);
+                    mensaje += "\nTOTAL A PAGAR: " +
+                        dinero(subtotal + entrega.tarifa - entrega.descuento);
+                }
+
+            } else {
+                mensaje += "\nDomicilio: $0";
+                mensaje += "\nTOTAL A PAGAR: " + dinero(subtotal);
+            }
+
+            mensaje += "\n\n¡Muchas gracias!";
+
+            const enlace = "https://wa.me/" + WHATSAPP +
+                "?text=" + encodeURIComponent(mensaje);
+
+            // INFORMACIÓN PARA SUPABASE
+            const pedido = {
+                nombre_cliente: nombre || null,
+                "Teléfono": telefono || null,
+
+                "Productos": {
+                    items: carrito.map(producto => ({
+                        nombre: producto.nombre,
+                        precio: producto.precio,
+                        cantidad: producto.cantidad
+                    })),
+                    punto_recogida: puntoElegido.nombre,
+                    referencia: referencia || null,
+                    zona: entrega.zona,
+                    tarifa_domicilio: entrega.pendiente
+                        ? null
+                        : entrega.tarifa,
+                    descuento: entrega.descuento
+                },
+
+                "Modalidad": modalidad,
+                "Barrio": esDomicilio ? barrio : null,
+                "Dirección": esDomicilio ? direccion : null,
+
+                "Total": entrega.pendiente
+                    ? null
+                    : subtotal + entrega.tarifa - entrega.descuento,
+
+                "Estado": "Pendiente"
+            };
+
+            // ABRIR WHATSAPP Y GUARDAR
+            window.open(enlace, "_blank");
+
+            if (!supabaseClient) {
+                alert("WhatsApp se abrió, pero no se encontró la conexión con Supabase. El pedido no se guardó.");
+                return;
+            }
+
+            botonPedido.disabled = true;
+            botonPedido.textContent = "Guardando pedido...";
+
+            try {
+
+                const { error } = await supabaseClient
+                    .from("Pedidos")
+                    .insert([pedido]);
+
+                if (error) {
+                    console.error("Error al guardar el pedido:", error);
+
+                    alert(
+                        "WhatsApp se abrió, pero no se pudo guardar el pedido.\n\n" +
+                        "Detalle del error:\n" + error.message
+                    );
+
+                } else {
+
+                    alert(
+                        "¡Pedido registrado correctamente!\n\n" +
+                        "Tu pedido quedó guardado en la base de datos."
+                    );
+                }
+
+            } catch (error) {
+
+                console.error("Error de conexión con Supabase:", error);
+
+                alert(
+                    "Ocurrió un problema al guardar el pedido:\n\n" +
+                    error.message
+                );
+
+            } finally {
+
+                botonPedido.disabled = false;
+                botonPedido.textContent = "Realizar pedido por WhatsApp";
+            }
+        };
+    }
+
+    // ESTADO INICIAL
     datosDomicilio.hidden = tipoEntrega.value !== "domicilio";
 
     actualizar();
 
-    console.log("Mini Dreamcom: carrito, domicilios y Supabase listos - VERSION 5.3");
+    console.log(
+        "Mini Dreamcom: carrito, domicilios y Supabase listos - VERSION 5.4"
+    );
 
 });
