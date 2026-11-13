@@ -440,7 +440,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Preparar información para Supabase
         const pedido = {
             nombre_cliente: nombre || null,
-            telefono: telefono || null,
+            "Teléfono": telefono || null,
 
             productos: {
                 items: carrito.map(producto => ({
@@ -479,7 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Solo INSERT: no solicitamos leer el ID
             const { error } = await supabaseClient
-                .from("pedidos")
+                .from("Pedidos")
                 .insert([pedido]);
 
             if (error) {
