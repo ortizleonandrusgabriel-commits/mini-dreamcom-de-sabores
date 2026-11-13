@@ -1,6 +1,6 @@
 /* MINI DREAMCOM DE SABORES
    CARRITO, DOMICILIOS Y PEDIDOS
-   VERSION 5.0 - CON SUPABASE
+   VERSION 5.1 - CON SUPABASE
 */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    // Verificar conexión con Supabase
+    // Conexión con Supabase
     const supabaseClient = window.supabaseClient || null;
 
     if (!supabaseClient) {
@@ -434,8 +434,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const enlace = "https://wa.me/" + WHATSAPP +
             "?text=" + encodeURIComponent(mensaje);
 
-        // Abrir WhatsApp inmediatamente
-        // para evitar que el navegador bloquee la ventana
+        // Abrir WhatsApp
         window.open(enlace, "_blank");
 
         // Preparar información para Supabase
@@ -478,10 +477,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
 
-            const { data, error } = await supabaseClient
+            // Solo INSERT: no solicitamos leer el ID
+            const { error } = await supabaseClient
                 .from("pedidos")
-                .insert([pedido])
-                .select("id");
+                .insert([pedido]);
 
             if (error) {
                 console.error("Error al guardar el pedido:", error);
@@ -494,15 +493,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            const numeroPedido = data && data.length > 0
-                ? data[0].id
-                : null;
-
             alert(
                 "¡Pedido registrado correctamente!\n\n" +
-                (numeroPedido
-                    ? "Número de pedido: " + numeroPedido
-                    : "Tu pedido quedó guardado en la base de datos.")
+                "Tu pedido quedó guardado en la base de datos."
             );
 
         } catch (error) {
@@ -526,6 +519,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     actualizar();
 
-    console.log("Mini Dreamcom: carrito, domicilios y Supabase listos - VERSION 5.0");
+    console.log("Mini Dreamcom: carrito, domicilios y Supabase listos - VERSION 5.1");
 
 });
+                                          
