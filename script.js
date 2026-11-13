@@ -1,6 +1,6 @@
 /* MINI DREAMCOM DE SABORES
    CARRITO, DOMICILIOS Y PEDIDOS
-   VERSION 5.2 - CON SUPABASE
+   VERSION 5.3 - SUPABASE CORREGIDO
 */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -346,7 +346,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Preparar pedido, enviarlo a WhatsApp y guardarlo en Supabase
     botonPedido.onclick = async (evento) => {
 
-        // Evitar que el formulario recargue la página
         evento.preventDefault();
 
         if (carrito.length === 0) {
@@ -386,7 +385,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("El domicilio de este barrio está pendiente de confirmar. Comunícate con nosotros por WhatsApp para conocer la tarifa.");
         }
 
-        const productos = carrito.map(producto => {
+        const productosMensaje = carrito.map(producto => {
             const parcial = producto.precio * producto.cantidad;
 
             return "• " + producto.nombre +
@@ -400,7 +399,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (nombre) mensaje += "Nombre: " + nombre + "\n";
         if (telefono) mensaje += "Teléfono: " + telefono + "\n";
 
-        mensaje += "\nPRODUCTOS:\n" + productos;
+        mensaje += "\nPRODUCTOS:\n" + productosMensaje;
 
         mensaje += "\n\nMODALIDAD: " +
             (esDomicilio ? "Domicilio" : "Recogida gratuita");
@@ -438,11 +437,12 @@ document.addEventListener("DOMContentLoaded", () => {
             "?text=" + encodeURIComponent(mensaje);
 
         // Preparar información para Supabase
+        // Los nombres coinciden con las columnas reales de public.Pedidos
         const pedido = {
             nombre_cliente: nombre || null,
             "Teléfono": telefono || null,
 
-            productos: {
+            "Productos": {
                 items: carrito.map(producto => ({
                     nombre: producto.nombre,
                     precio: producto.precio,
@@ -457,13 +457,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 descuento: entrega.descuento
             },
 
-            modalidad: modalidad,
-            barrio: esDomicilio ? barrio : null,
-            direccion: esDomicilio ? direccion : null,
+            "Modalidad": modalidad,
+            "Barrio": esDomicilio ? barrio : null,
+            "Dirección": esDomicilio ? direccion : null,
 
-            total: entrega.pendiente
+            "Total": entrega.pendiente
                 ? null
-                : subtotal + entrega.tarifa - entrega.descuento
+                : subtotal + entrega.tarifa - entrega.descuento,
+
+            "Estado": "Pendiente"
         };
 
         // Comprobar conexión con Supabase
@@ -476,6 +478,9 @@ document.addEventListener("DOMContentLoaded", () => {
         botonPedido.disabled = true;
         botonPedido.textContent = "Guardando pedido...";
 
+        // Abrir WhatsApp durante la acción del usuario
+        window.open(enlace, "_blank");
+
         try {
 
             // Guardar pedido en Supabase
@@ -487,7 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Error al guardar el pedido:", error);
 
                 alert(
-                    "No se pudo guardar el pedido en Supabase.\n\n" +
+                    "WhatsApp se abrió, pero no se pudo guardar el pedido.\n\n" +
                     "Detalle del error:\n" + error.message
                 );
 
@@ -513,9 +518,6 @@ document.addEventListener("DOMContentLoaded", () => {
             botonPedido.disabled = false;
             botonPedido.textContent = "Realizar pedido por WhatsApp";
 
-            // Abrir WhatsApp después de intentar guardar
-            window.open(enlace, "_blank");
-
         }
     };
 
@@ -524,6 +526,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     actualizar();
 
-    console.log("Mini Dreamcom: carrito, domicilios y Supabase listos - VERSION 5.2");
+    console.log("Mini Dreamcom: carrito, domicilios y Supabase listos - VERSION 5.3");
 
 });
