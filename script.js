@@ -36,6 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Conexión con Supabase
     const supabaseClient = window.supabaseClient || null;
+   
+   .console.log("Prueba de Supabase:", window.supabase);
+console.log("Prueba del cliente:", window.supabaseClient);
+console.log("Cliente recibido:", supabaseClient);
 
     if (!supabaseClient) {
         console.error("No se encontró la conexión con Supabase.");
