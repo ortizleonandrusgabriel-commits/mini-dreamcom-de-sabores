@@ -95,7 +95,60 @@ document.addEventListener("DOMContentLoaded", () => {
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "");
     }
+       // AVISO VERDE AL AGREGAR PRODUCTOS
+let temporizadorAviso;
 
+function mostrarAvisoProducto(nombre) {
+    let aviso = document.getElementById("aviso-producto");
+
+    if (!aviso) {
+        aviso = document.createElement("div");
+        aviso.id = "aviso-producto";
+
+        aviso.style.cssText = `
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translate(-50%, -150%);
+            width: calc(100% - 30px);
+            max-width: 420px;
+            background: #e5f8e9;
+            color: #176b38;
+            border: 1px solid #8bd5a0;
+            border-radius: 12px;
+            padding: 14px 16px;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.15);
+            z-index: 99999;
+            font-family: Arial, sans-serif;
+            transition: transform 0.35s ease;
+            box-sizing: border-box;
+        `;
+
+        const titulo = document.createElement("strong");
+        titulo.textContent = "✓ ¡Producto agregado al carrito!";
+
+        const mensaje = document.createElement("div");
+        mensaje.id = "aviso-producto-mensaje";
+        mensaje.style.marginTop = "5px";
+        mensaje.style.fontSize = "14px";
+
+        aviso.appendChild(titulo);
+        aviso.appendChild(mensaje);
+
+        document.body.appendChild(aviso);
+    }
+
+    document.getElementById("aviso-producto-mensaje").textContent =
+        nombre + " se agregó correctamente a tu carrito.";
+
+    aviso.style.transform = "translate(-50%, 0)";
+
+    clearTimeout(temporizadorAviso);
+
+    temporizadorAviso = setTimeout(() => {
+        aviso.style.transform = "translate(-50%, -150%)";
+    }, 3000);
+}
     // RECUPERAR CARRITO
     try {
         const guardado = JSON.parse(localStorage.getItem(CLAVE));
@@ -346,7 +399,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
 
-            actualizar();
+            actualizar()
+         
+             mostrarAvisoProducto(nombre);
 
             console.log("Producto agregado:", nombre);
         });
