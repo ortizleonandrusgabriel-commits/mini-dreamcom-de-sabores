@@ -1,6 +1,6 @@
 /* MINI DREAMCOM DE SABORES
    CARRITO, DOMICILIOS Y PEDIDOS
-   VERSION 5.5 - NOTIFICACIONES Y AGRADECIMIENTO
+   VERSION 5.6 - MENSAJES Y NUEVO PEDIDO
 */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -92,165 +92,142 @@ document.addEventListener("DOMContentLoaded", () => {
             .replace(/[\u0300-\u036f]/g, "");
     }
 
-    // NOTIFICACIÓN VERDE AL AGREGAR PRODUCTOS
+    // MENSAJE VERDE AL AGREGAR PRODUCTOS
     let temporizadorNotificacion;
 
     function mostrarNotificacion(texto) {
 
-        let notificacion = document.getElementById("notificacion-producto");
+        let aviso = document.getElementById("aviso-producto-agregado");
 
-        if (!notificacion) {
-            notificacion = document.createElement("div");
-            notificacion.id = "notificacion-producto";
+        if (!aviso) {
+            aviso = document.createElement("div");
+            aviso.id = "aviso-producto-agregado";
 
-            Object.assign(notificacion.style, {
-                position: "fixed",
-                top: "18px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: "calc(100% - 30px)",
-                maxWidth: "420px",
-                padding: "16px",
-                background: "#dcfce7",
-                color: "#166534",
-                border: "1px solid #86efac",
-                borderRadius: "12px",
-                boxShadow: "0 5px 20px rgba(0,0,0,0.15)",
-                zIndex: "99999",
-                fontSize: "15px",
-                fontWeight: "bold",
-                textAlign: "center",
-                opacity: "0",
-                transition: "opacity 0.3s ease"
-            });
+            aviso.style.position = "fixed";
+            aviso.style.top = "15px";
+            aviso.style.left = "5%";
+            aviso.style.width = "90%";
+            aviso.style.padding = "15px";
+            aviso.style.background = "#dcfce7";
+            aviso.style.color = "#166534";
+            aviso.style.border = "2px solid #86efac";
+            aviso.style.borderRadius = "12px";
+            aviso.style.textAlign = "center";
+            aviso.style.fontWeight = "bold";
+            aviso.style.zIndex = "99999";
+            aviso.style.boxSizing = "border-box";
+            aviso.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
 
-            document.body.appendChild(notificacion);
+            document.body.appendChild(aviso);
         }
 
-        notificacion.textContent = "✓ " + texto;
-        notificacion.style.display = "block";
+        aviso.textContent = texto;
+        aviso.style.display = "block";
 
         clearTimeout(temporizadorNotificacion);
 
-        requestAnimationFrame(() => {
-            notificacion.style.opacity = "1";
-        });
-
         temporizadorNotificacion = setTimeout(() => {
-            notificacion.style.opacity = "0";
-
-            setTimeout(() => {
-                notificacion.style.display = "none";
-            }, 300);
-
+            aviso.style.display = "none";
         }, 2800);
     }
 
-    // PANTALLA DE AGRADECIMIENTO
+    // MENSAJE DE AGRADECIMIENTO Y NUEVO PEDIDO
     function mostrarAgradecimiento() {
 
-        let pantalla = document.getElementById("pantalla-agradecimiento");
+        const anterior = document.getElementById("mensaje-pedido-exitoso");
 
-        if (!pantalla) {
-
-            pantalla = document.createElement("div");
-            pantalla.id = "pantalla-agradecimiento";
-
-            Object.assign(pantalla.style, {
-                position: "fixed",
-                inset: "0",
-                background: "rgba(0,0,0,0.75)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "20px",
-                zIndex: "100000"
-            });
-
-            const tarjeta = document.createElement("div");
-
-            Object.assign(tarjeta.style, {
-                background: "#ffffff",
-                color: "#333333",
-                width: "100%",
-                maxWidth: "380px",
-                padding: "30px 22px",
-                borderRadius: "20px",
-                textAlign: "center",
-                boxShadow: "0 8px 30px rgba(0,0,0,0.25)"
-            });
-
-            const icono = document.createElement("div");
-            icono.textContent = "❤️";
-            icono.style.fontSize = "48px";
-            icono.style.marginBottom = "12px";
-
-            const titulo = document.createElement("h2");
-            titulo.textContent = "¡Gracias por tu compra!";
-            titulo.style.color = "#15803d";
-            titulo.style.marginBottom = "14px";
-
-            const mensaje = document.createElement("p");
-            mensaje.textContent =
-                "Tu pedido ha sido registrado correctamente. Gracias por elegir Mini Dreamcom de Sabores. ¡Esperamos que disfrutes cada bocado!";
-            mensaje.style.lineHeight = "1.6";
-            mensaje.style.marginBottom = "22px";
-
-            const botonNuevo = document.createElement("button");
-            botonNuevo.type = "button";
-            botonNuevo.textContent = "¡Hacer otro pedido!";
-
-            Object.assign(botonNuevo.style, {
-                background: "#16a34a",
-                color: "#ffffff",
-                border: "none",
-                borderRadius: "10px",
-                padding: "13px 20px",
-                fontSize: "16px",
-                fontWeight: "bold",
-                cursor: "pointer",
-                width: "100%"
-            });
-
-            botonNuevo.addEventListener("click", () => {
-
-                carrito = [];
-                actualizar();
-
-                const campos = [
-                    "nombre-cliente",
-                    "telefono-cliente",
-                    "barrio-cliente",
-                    "direccion-cliente",
-                    "referencia-cliente"
-                ];
-
-                campos.forEach(id => {
-                    const campo = document.getElementById(id);
-                    if (campo) campo.value = "";
-                });
-
-                tipoEntrega.value = "recogida";
-                datosDomicilio.hidden = true;
-
-                actualizarResumen();
-
-                pantalla.remove();
-
-                window.scrollTo({
-                    top: 0,
-                    behavior: "smooth"
-                });
-            });
-
-            tarjeta.appendChild(icono);
-            tarjeta.appendChild(titulo);
-            tarjeta.appendChild(mensaje);
-            tarjeta.appendChild(botonNuevo);
-
-            pantalla.appendChild(tarjeta);
-            document.body.appendChild(pantalla);
+        if (anterior) {
+            anterior.remove();
         }
+
+        const fondo = document.createElement("div");
+        fondo.id = "mensaje-pedido-exitoso";
+
+        fondo.style.position = "fixed";
+        fondo.style.inset = "0";
+        fondo.style.background = "rgba(0,0,0,0.65)";
+        fondo.style.display = "flex";
+        fondo.style.alignItems = "center";
+        fondo.style.justifyContent = "center";
+        fondo.style.padding = "20px";
+        fondo.style.zIndex = "100000";
+
+        const tarjeta = document.createElement("div");
+
+        tarjeta.style.background = "#ffffff";
+        tarjeta.style.padding = "28px 20px";
+        tarjeta.style.borderRadius = "20px";
+        tarjeta.style.textAlign = "center";
+        tarjeta.style.width = "100%";
+        tarjeta.style.maxWidth = "380px";
+        tarjeta.style.boxSizing = "border-box";
+        tarjeta.style.boxShadow = "0 8px 30px rgba(0,0,0,0.2)";
+
+        const titulo = document.createElement("h2");
+        titulo.textContent = "¡Gracias por tu compra! 💚";
+        titulo.style.color = "#166534";
+
+        const mensaje = document.createElement("p");
+        mensaje.textContent =
+            "Tu pedido quedó registrado correctamente. " +
+            "Gracias por elegir Mini Dreamcom de Sabores. " +
+            "¡Esperamos que disfrutes cada bocado!";
+
+        const botonNuevo = document.createElement("button");
+        botonNuevo.type = "button";
+        botonNuevo.textContent = "¡Hacer otro pedido!";
+
+        botonNuevo.style.background = "#16a34a";
+        botonNuevo.style.color = "#ffffff";
+        botonNuevo.style.border = "none";
+        botonNuevo.style.padding = "13px 20px";
+        botonNuevo.style.borderRadius = "10px";
+        botonNuevo.style.fontWeight = "bold";
+        botonNuevo.style.fontSize = "16px";
+        botonNuevo.style.marginTop = "15px";
+        botonNuevo.style.cursor = "pointer";
+
+        botonNuevo.onclick = () => {
+
+            carrito = [];
+
+            actualizar();
+
+            const campos = [
+                "nombre-cliente",
+                "telefono-cliente",
+                "barrio-cliente",
+                "direccion-cliente",
+                "referencia-cliente"
+            ];
+
+            campos.forEach(id => {
+                const campo = document.getElementById(id);
+
+                if (campo) {
+                    campo.value = "";
+                }
+            });
+
+            tipoEntrega.value = "recogida";
+            datosDomicilio.hidden = true;
+
+            actualizarResumen();
+
+            fondo.remove();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        };
+
+        tarjeta.appendChild(titulo);
+        tarjeta.appendChild(mensaje);
+        tarjeta.appendChild(botonNuevo);
+
+        fondo.appendChild(tarjeta);
+        document.body.appendChild(fondo);
     }
 
     // RECUPERAR CARRITO
@@ -505,7 +482,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             actualizar();
 
-            // NUEVO: MENSAJE VERDE DE CONFIRMACIÓN
             mostrarNotificacion(
                 "¡Producto agregado! Tu antojito ya está en el carrito. ¡Gracias por elegirnos!"
             );
@@ -649,4 +625,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
             mensaje += "\n\n¡Muchas gracias!";
 
-            const enlace = "
+            const enlace = "https://wa.me/" + WHATSAPP +
+                "?text=" + encodeURIComponent(mensaje);
+
+            // INFORMACIÓN PARA SUPABASE
+            const pedido = {
+                nombre_cliente: nombre || null,
+                "Teléfono": telefono || null,
+
+                "Productos": {
+                    items: carrito.map(producto => ({
+                        nombre: producto.nombre,
+                        precio: producto.precio,
+                        cantidad: producto.cantidad
+                    })),
+                    punto_recogida: puntoElegido.nombre,
+                    referencia: referencia || null,
+                    zona: entrega.zona,
+                    tarifa_domicilio: entrega.pendiente
+                        ? null
+                        : entrega.tarifa,
+                    descuento: entrega.descuento
