@@ -250,3 +250,31 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+/* BUSCADOR PROFESIONAL */
+.buscador-menu {
+    max-width: 650px;
+    margin: 30px auto;
+    padding: 0 15px;
+}
+
+#buscar-producto {
+    width: 100%;
+    padding: 18px 24px;
+    border: 2px solid #e98a32;
+    border-radius: 30px;
+    font-size: 18px;
+    outline: none;
+    background: white;
+    color: #333;
+    box-sizing: border-box;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.10);
+}
+
+#buscar-producto:focus {
+    border-color: #ad4723;
+    box-shadow: 0 0 12px rgba(173,71,35,0.25);
+}
+
+#buscar-producto::placeholder {
+    color: #999;
+}
