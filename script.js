@@ -1,17 +1,13 @@
 /* MINI DREAMCOM DE SABORES
    CARRITO, DOMICILIOS Y PEDIDOS
-   VERSION 5.4 - CORREGIDO Y MEJORADO
+   VERSION 5.5 - NOTIFICACIONES Y AGRADECIMIENTO
 */
 
 document.addEventListener("DOMContentLoaded", () => {
 
     // ELEMENTOS DE LA PÁGINA
     const botonesAgregar = document.querySelectorAll(".agregar");
-   
-   alert(
-    "SCRIPT ACTIVO. BOTONES ENCONTRADOS: " +
-    botonesAgregar.length
-);
+
     const listaCarrito = document.getElementById("lista-carrito");
     const cantidad = document.getElementById("cantidad");
     const total = document.getElementById("total");
@@ -94,6 +90,167 @@ document.addEventListener("DOMContentLoaded", () => {
             .toLowerCase()
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    // NOTIFICACIÓN VERDE AL AGREGAR PRODUCTOS
+    let temporizadorNotificacion;
+
+    function mostrarNotificacion(texto) {
+
+        let notificacion = document.getElementById("notificacion-producto");
+
+        if (!notificacion) {
+            notificacion = document.createElement("div");
+            notificacion.id = "notificacion-producto";
+
+            Object.assign(notificacion.style, {
+                position: "fixed",
+                top: "18px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: "calc(100% - 30px)",
+                maxWidth: "420px",
+                padding: "16px",
+                background: "#dcfce7",
+                color: "#166534",
+                border: "1px solid #86efac",
+                borderRadius: "12px",
+                boxShadow: "0 5px 20px rgba(0,0,0,0.15)",
+                zIndex: "99999",
+                fontSize: "15px",
+                fontWeight: "bold",
+                textAlign: "center",
+                opacity: "0",
+                transition: "opacity 0.3s ease"
+            });
+
+            document.body.appendChild(notificacion);
+        }
+
+        notificacion.textContent = "✓ " + texto;
+        notificacion.style.display = "block";
+
+        clearTimeout(temporizadorNotificacion);
+
+        requestAnimationFrame(() => {
+            notificacion.style.opacity = "1";
+        });
+
+        temporizadorNotificacion = setTimeout(() => {
+            notificacion.style.opacity = "0";
+
+            setTimeout(() => {
+                notificacion.style.display = "none";
+            }, 300);
+
+        }, 2800);
+    }
+
+    // PANTALLA DE AGRADECIMIENTO
+    function mostrarAgradecimiento() {
+
+        let pantalla = document.getElementById("pantalla-agradecimiento");
+
+        if (!pantalla) {
+
+            pantalla = document.createElement("div");
+            pantalla.id = "pantalla-agradecimiento";
+
+            Object.assign(pantalla.style, {
+                position: "fixed",
+                inset: "0",
+                background: "rgba(0,0,0,0.75)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "20px",
+                zIndex: "100000"
+            });
+
+            const tarjeta = document.createElement("div");
+
+            Object.assign(tarjeta.style, {
+                background: "#ffffff",
+                color: "#333333",
+                width: "100%",
+                maxWidth: "380px",
+                padding: "30px 22px",
+                borderRadius: "20px",
+                textAlign: "center",
+                boxShadow: "0 8px 30px rgba(0,0,0,0.25)"
+            });
+
+            const icono = document.createElement("div");
+            icono.textContent = "❤️";
+            icono.style.fontSize = "48px";
+            icono.style.marginBottom = "12px";
+
+            const titulo = document.createElement("h2");
+            titulo.textContent = "¡Gracias por tu compra!";
+            titulo.style.color = "#15803d";
+            titulo.style.marginBottom = "14px";
+
+            const mensaje = document.createElement("p");
+            mensaje.textContent =
+                "Tu pedido ha sido registrado correctamente. Gracias por elegir Mini Dreamcom de Sabores. ¡Esperamos que disfrutes cada bocado!";
+            mensaje.style.lineHeight = "1.6";
+            mensaje.style.marginBottom = "22px";
+
+            const botonNuevo = document.createElement("button");
+            botonNuevo.type = "button";
+            botonNuevo.textContent = "¡Hacer otro pedido!";
+
+            Object.assign(botonNuevo.style, {
+                background: "#16a34a",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: "10px",
+                padding: "13px 20px",
+                fontSize: "16px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                width: "100%"
+            });
+
+            botonNuevo.addEventListener("click", () => {
+
+                carrito = [];
+                actualizar();
+
+                const campos = [
+                    "nombre-cliente",
+                    "telefono-cliente",
+                    "barrio-cliente",
+                    "direccion-cliente",
+                    "referencia-cliente"
+                ];
+
+                campos.forEach(id => {
+                    const campo = document.getElementById(id);
+                    if (campo) campo.value = "";
+                });
+
+                tipoEntrega.value = "recogida";
+                datosDomicilio.hidden = true;
+
+                actualizarResumen();
+
+                pantalla.remove();
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            });
+
+            tarjeta.appendChild(icono);
+            tarjeta.appendChild(titulo);
+            tarjeta.appendChild(mensaje);
+            tarjeta.appendChild(botonNuevo);
+
+            pantalla.appendChild(tarjeta);
+            document.body.appendChild(pantalla);
+        }
     }
 
     // RECUPERAR CARRITO
@@ -348,6 +505,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             actualizar();
 
+            // NUEVO: MENSAJE VERDE DE CONFIRMACIÓN
+            mostrarNotificacion(
+                "¡Producto agregado! Tu antojito ya está en el carrito. ¡Gracias por elegirnos!"
+            );
+
             console.log("Producto agregado:", nombre);
         });
     });
@@ -487,97 +649,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
             mensaje += "\n\n¡Muchas gracias!";
 
-            const enlace = "https://wa.me/" + WHATSAPP +
-                "?text=" + encodeURIComponent(mensaje);
-
-            // INFORMACIÓN PARA SUPABASE
-            const pedido = {
-                nombre_cliente: nombre || null,
-                "Teléfono": telefono || null,
-
-                "Productos": {
-                    items: carrito.map(producto => ({
-                        nombre: producto.nombre,
-                        precio: producto.precio,
-                        cantidad: producto.cantidad
-                    })),
-                    punto_recogida: puntoElegido.nombre,
-                    referencia: referencia || null,
-                    zona: entrega.zona,
-                    tarifa_domicilio: entrega.pendiente
-                        ? null
-                        : entrega.tarifa,
-                    descuento: entrega.descuento
-                },
-
-                "Modalidad": modalidad,
-                "Barrio": esDomicilio ? barrio : null,
-                "Dirección": esDomicilio ? direccion : null,
-
-                "Total": entrega.pendiente
-                    ? null
-                    : subtotal + entrega.tarifa - entrega.descuento,
-
-                "Estado": "Pendiente"
-            };
-
-            // ABRIR WHATSAPP Y GUARDAR
-            window.open(enlace, "_blank");
-
-            if (!supabaseClient) {
-                alert("WhatsApp se abrió, pero no se encontró la conexión con Supabase. El pedido no se guardó.");
-                return;
-            }
-
-            botonPedido.disabled = true;
-            botonPedido.textContent = "Guardando pedido...";
-
-            try {
-
-                const { error } = await supabaseClient
-                    .from("Pedidos")
-                    .insert([pedido]);
-
-                if (error) {
-                    console.error("Error al guardar el pedido:", error);
-
-                    alert(
-                        "WhatsApp se abrió, pero no se pudo guardar el pedido.\n\n" +
-                        "Detalle del error:\n" + error.message
-                    );
-
-                } else {
-
-                    alert(
-                        "¡Pedido registrado correctamente!\n\n" +
-                        "Tu pedido quedó guardado en la base de datos."
-                    );
-                }
-
-            } catch (error) {
-
-                console.error("Error de conexión con Supabase:", error);
-
-                alert(
-                    "Ocurrió un problema al guardar el pedido:\n\n" +
-                    error.message
-                );
-
-            } finally {
-
-                botonPedido.disabled = false;
-                botonPedido.textContent = "Realizar pedido por WhatsApp";
-            }
-        };
-    }
-
-    // ESTADO INICIAL
-    datosDomicilio.hidden = tipoEntrega.value !== "domicilio";
-
-    actualizar();
-
-    console.log(
-        "Mini Dreamcom: carrito, domicilios y Supabase listos - VERSION 5.4"
-    );
-
-});
+            const enlace = "
