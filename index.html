@@ -970,6 +970,154 @@ document.addEventListener("DOMContentLoaded", function () {
     <!-- ARCHIVOS DE LA APLICACIÓN -->
 <script src="delivery.js"></script>
 <script src="script.js"></script>
+           
+<!-- ASISTENTE VIRTUAL MINI DREAMCOM -->
+<style>
+#botonAsistente {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #ff6b35;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 27px;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 3px 10px #999;
+}
+
+#ventanaAsistente {
+    display: none;
+    position: fixed;
+    bottom: 90px;
+    right: 15px;
+    width: 300px;
+    max-width: calc(100vw - 30px);
+    height: 390px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 3px 15px #777;
+    z-index: 9999;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+#cabeceraBot {
+    background: #ff6b35;
+    color: white;
+    padding: 15px;
+    font-weight: bold;
+}
+
+#mensajesBot {
+    height: 270px;
+    overflow-y: auto;
+    padding: 10px;
+    font-size: 14px;
+}
+
+#entradaBot {
+    display: flex;
+    padding: 8px;
+    gap: 5px;
+}
+
+#preguntaBot {
+    width: 100%;
+    min-width: 0;
+    padding: 9px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+#enviarBot {
+    background: #ff6b35;
+    color: white;
+    border: none;
+    padding: 9px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+</style>
+
+<button id="botonAsistente" aria-label="Abrir asistente virtual">🤖</button>
+
+<div id="ventanaAsistente">
+    <div id="cabeceraBot">
+        🤖 Asistente Mini Dreamcom
+        <span id="cerrarBot" style="float:right;cursor:pointer;">✖</span>
+    </div>
+
+    <div id="mensajesBot">
+        <p><b>Asistente:</b> ¡Hola! Bienvenido a Mini Dreamcom de Sabores. ¿Qué te gustaría saber?</p>
+    </div>
+
+    <div id="entradaBot">
+        <input id="preguntaBot" type="text" placeholder="Escribe tu pregunta...">
+        <button id="enviarBot">Enviar</button>
+    </div>
+</div>
+
+<script>
+(function () {
+    const boton = document.getElementById("botonAsistente");
+    const ventana = document.getElementById("ventanaAsistente");
+    const cerrar = document.getElementById("cerrarBot");
+    const mensajes = document.getElementById("mensajesBot");
+    const pregunta = document.getElementById("preguntaBot");
+    const enviar = document.getElementById("enviarBot");
+
+    boton.addEventListener("click", function () {
+        ventana.style.display =
+            ventana.style.display === "block" ? "none" : "block";
+    });
+
+    cerrar.addEventListener("click", function () {
+        ventana.style.display = "none";
+    });
+
+    function responder() {
+        const texto = pregunta.value.trim().toLowerCase();
+        if (!texto) return;
+
+        let respuesta = "¡Gracias por escribirnos! Puedes preguntarme por nuestro menú, precios, pedidos o ubicación en Cartagena.";
+
+        if (texto.includes("hola") || texto.includes("buenas")) {
+            respuesta = "¡Hola! 👋 Bienvenido a Mini Dreamcom de Sabores. ¿En qué puedo ayudarte?";
+        } else if (texto.includes("menu") || texto.includes("comida") || texto.includes("producto")) {
+            respuesta = "🍔 Tenemos variedades de mini comidas rápidas. ¡Explora nuestras categorías y descubre el menú!";
+        } else if (texto.includes("hamburguesa")) {
+            respuesta = "🍔 ¡Tenemos mini hamburguesas! Puedes consultar las variedades disponibles en nuestro menú.";
+        } else if (texto.includes("sandwich") || texto.includes("sándwich")) {
+            respuesta = "🥪 ¡Tenemos diferentes variedades de sándwiches! Revisa nuestra sección de productos.";
+        } else if (texto.includes("precio") || texto.includes("cuesta") || texto.includes("vale")) {
+            respuesta = "💰 Nuestros precios están publicados en cada producto de la tienda. ¡Échales un vistazo!";
+        } else if (texto.includes("ubicacion") || texto.includes("ubicación") || texto.includes("direccion") || texto.includes("dirección")) {
+            respuesta = "📍 ¡Estamos en Cartagena de Indias, Bolívar, Colombia!";
+        } else if (texto.includes("pedido") || texto.includes("comprar")) {
+            respuesta = "🛒 ¡Puedes agregar tus productos al carrito y seguir los pasos para realizar tu pedido!";
+        } else if (texto.includes("gracias")) {
+            respuesta = "¡Con mucho gusto! ❤️ Gracias por visitar Mini Dreamcom de Sabores.";
+        }
+
+        mensajes.innerHTML +=
+            "<p><b>Tú:</b> " + texto.replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</p>" +
+            "<p><b>Asistente:</b> " + respuesta + "</p>";
+
+        pregunta.value = "";
+        mensajes.scrollTop = mensajes.scrollHeight;
+    }
+
+    enviar.addEventListener("click", responder);
+
+    pregunta.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") responder();
+    });
+})();
+</script>
     
 </body>
                         </html>
