@@ -7,6 +7,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ELEMENTOS DE LA PÁGINA
     const botonesAgregar = document.querySelectorAll(".agregar");
+   
+   alert(
+    "SCRIPT ACTIVO. BOTONES ENCONTRADOS: " +
+    botonesAgregar.length
+);
     const listaCarrito = document.getElementById("lista-carrito");
     const cantidad = document.getElementById("cantidad");
     const total = document.getElementById("total");
