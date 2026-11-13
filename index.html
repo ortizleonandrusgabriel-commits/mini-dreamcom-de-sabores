@@ -97,7 +97,12 @@
         }
         
 
+
 /* MENU DE TRES RAYITAS */
+header {
+    position: relative;
+}
+
 #boton-menu {
     background: #E98A32;
     color: white;
@@ -133,18 +138,12 @@
     padding: 8px;
 }
 
-header {
-    position: relative;
-}
-
         
     </style>
 </head>
 
 <body>
 
-    <header>
-        
 <header>
     <div class="logo">🍔 Mini Dreamcom</div>
 
@@ -152,22 +151,25 @@ header {
         ☰
     </button>
 
-    <nav id="menu-navegacion">
-        <a href="#inicio">🏠 Inicio</a>
-        <a href="#menu">🍔 Menú</a>
-        <a href="#nosotros">ℹ️ Nosotros</a>
-        <a href="#contacto">📞 Contacto</a>
-        <a href="#ubicacion">📍 Ubicación</a>
-        <a href="#horarios">⏰ Horarios</a>
-    </nav>
-
     <button id="ver-carrito" class="cart-button">
         🛒 Carrito (<span id="cantidad">0</span>)
     </button>
+
+    <!-- TU BARRA DE NAVEGACIÓN ANTERIOR -->
+    <nav class="barra-navegacion">
+        <a href="#inicio">Inicio</a>
+        <a href="#menu">Menú</a>
+        <a href="#nosotros">Nosotros</a>
+        <a href="#contacto">Contacto</a>
+    </nav>
+
+    <!-- MENÚ DE LAS TRES RAYITAS -->
+    <nav id="menu-navegacion">
+        <a href="#ubicacion">📍 Ubicación</a>
+        <a href="#horarios">⏰ Horarios</a>
+    </nav>
 </header>
 
-
-    </header>
 
     <main>
 
