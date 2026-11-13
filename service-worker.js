@@ -1,9 +1,11 @@
-const CACHE_NAME = "mini-dreamcom-v3";
+const CACHE_NAME = "mini-dreamcom-v4";
 
 const ARCHIVOS = [
     "./",
     "./index.html",
     "./style.css",
+    "./script.js",
+    "./delivery.js",
     "./manifest.json",
     "./icon.svg",
     "./mini-perros-calientes.png"
@@ -41,8 +43,20 @@ self.addEventListener("fetch", (event) => {
     if (url.origin !== self.location.origin) return;
 
     event.respondWith(
-        caches.match(event.request).then((respuesta) => {
-            return respuesta || fetch(event.request);
-        })
+        fetch(event.request)
+            .then((respuesta) => {
+                if (respuesta.ok) {
+                    const copia = respuesta.clone();
+
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, copia);
+                    });
+                }
+
+                return respuesta;
+            })
+            .catch(() => {
+                return caches.match(event.request);
+            })
     );
 });
