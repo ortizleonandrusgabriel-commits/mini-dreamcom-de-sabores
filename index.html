@@ -95,24 +95,87 @@
             margin-top: 35px;
             padding-top: 25px;
         }
+        
+/* MENU DE NAVEGACION */
+#boton-menu {
+    display: none;
+    background: #E98A32;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+#menu-navegacion a {
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    header {
+        position: relative;
+        flex-wrap: wrap;
+    }
+
+    #boton-menu {
+        display: block;
+    }
+
+    #menu-navegacion {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        box-sizing: border-box;
+        background: white;
+        padding: 15px;
+        flex-direction: column;
+        gap: 16px;
+        z-index: 9998;
+        box-shadow: 0 5px 10px #ccc;
+    }
+
+    #menu-navegacion.menu-abierto {
+        display: flex;
+    }
+
+    #menu-navegacion a {
+        display: block;
+        padding: 8px;
+        color: #333;
+    }
+        }
+        
     </style>
 </head>
 
 <body>
 
     <header>
-        <div class="logo">🍔 Mini Dreamcom</div>
+        
+<header>
+    <button id="boton-menu" aria-label="Abrir menú" aria-expanded="false">
+        ☰
+    </button>
 
-        <nav>
-            <a href="#inicio">Inicio</a>
-            <a href="#menu">Menú</a>
-            <a href="#nosotros">Nosotros</a>
-            <a href="#contacto">Contacto</a>
-        </nav>
+    <div class="logo">🍔 Mini Dreamcom</div>
 
-        <button id="ver-carrito" class="cart-button">
-            🛒 Carrito (<span id="cantidad">0</span>)
-        </button>
+    <nav id="menu-navegacion">
+        <a href="#inicio">🏠 Inicio</a>
+        <a href="#menu">🍔 Menú</a>
+        <a href="#nosotros">ℹ️ Nosotros</a>
+        <a href="#contacto">📞 Contacto</a>
+        <a href="#ubicacion">📍 Ubicación</a>
+        <a href="#horarios">⏰ Horarios</a>
+    </nav>
+
+    <button id="ver-carrito" class="cart-button">
+        🛒 Carrito (<span id="cantidad">0</span>)
+    </button>
+</header>
+
     </header>
 
     <main>
@@ -1199,6 +1262,29 @@ document.addEventListener("DOMContentLoaded", function () {
         if (e.key === "Enter") responder();
     });
 })();
+    
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const botonMenu = document.getElementById("boton-menu");
+    const menu = document.getElementById("menu-navegacion");
+
+    botonMenu.addEventListener("click", function () {
+        const abierto = menu.classList.toggle("menu-abierto");
+
+        botonMenu.textContent = abierto ? "✖" : "☰";
+        botonMenu.setAttribute("aria-expanded", abierto);
+    });
+
+    menu.querySelectorAll("a").forEach(function (enlace) {
+        enlace.addEventListener("click", function () {
+            menu.classList.remove("menu-abierto");
+            botonMenu.textContent = "☰";
+            botonMenu.setAttribute("aria-expanded", "false");
+        });
+    });
+});
+</script>
+    
 </script>
     
 </body>
