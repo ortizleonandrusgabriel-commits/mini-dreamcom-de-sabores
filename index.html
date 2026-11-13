@@ -361,15 +361,29 @@
     <!-- LIBRERÍA DE SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- CONFIGURACIÓN DE CONEXIÓN -->
+    <!-- CONFIGURACIÓN Y COMPROBACIÓN DE CONEXIÓN -->
     <script>
         const SUPABASE_URL = "https://licfqupggorsrkjnqfps.supabase.co";
         const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_XawNwXS0HJntIx5c55sW5w_UJaiFZh-";
 
-        window.supabaseClient = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_PUBLISHABLE_KEY
-        );
+        console.log("Librería Supabase:", window.supabase);
+
+        if (window.supabase && window.supabase.createClient) {
+
+            window.supabaseClient = window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_PUBLISHABLE_KEY
+            );
+
+            console.log("Cliente Supabase:", window.supabaseClient);
+            console.log("Conexión inicializada correctamente.");
+
+        } else {
+
+            console.error("ERROR: No se cargó la librería de Supabase.");
+            window.supabaseClient = null;
+
+        }
     </script>
 
     <!-- ARCHIVOS DE LA APLICACIÓN -->
