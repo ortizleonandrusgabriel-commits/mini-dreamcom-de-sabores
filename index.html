@@ -391,7 +391,8 @@
 
     <!-- LIBRERÍA DE SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
+    
+    }<script>
     alert(
         window.supabase
         ? "SUPABASE: LIBRERÍA CARGADA"
@@ -422,25 +423,7 @@
             window.supabaseClient = null;
 
         }
-    </script>
-
-    <!-- ARCHIVOS DE LA APLICACIÓN -->
-    <script src="delivery.js"></script>
-    <script src="script.js"></script>
-
-    <!-- REGISTRO DEL SERVICE WORKER -->
-    <script>
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("./service-worker.js")
-                    .catch((error) => {
-                        console.error("Error al registrar la aplicación:", error);
-                    });
-            });
-        }
-    </script>
-
-<script>
+    
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -451,11 +434,9 @@ document.addEventListener("DOMContentLoaded", function () {
     let categoriaActiva = "todos";
 
     function filtrarProductos() {
-
         const texto = buscador.value.toLowerCase().trim();
 
         productos.forEach(function (producto) {
-
             const nombre = producto.querySelector("h3").textContent.toLowerCase();
             const descripcion = producto.querySelector("p").textContent.toLowerCase();
             const categoria = producto.dataset.categoria;
@@ -471,10 +452,11 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    buscador.addEventListener("input", filtrarProductos);
+    if (buscador) {
+        buscador.addEventListener("input", filtrarProductos);
+    }
 
     botones.forEach(function (boton) {
-
         boton.addEventListener("click", function () {
 
             categoriaActiva = boton.dataset.categoria;
@@ -491,6 +473,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 </script>
+
     
 </body>
                         </html>
