@@ -1,13 +1,17 @@
 /* MINI DREAMCOM DE SABORES
    CARRITO, DOMICILIOS Y PEDIDOS
-   VERSION 5.6 - MENSAJES Y NUEVO PEDIDO
+   VERSION 5.4 - CORREGIDO Y MEJORADO
 */
 
 document.addEventListener("DOMContentLoaded", () => {
 
     // ELEMENTOS DE LA PÁGINA
     const botonesAgregar = document.querySelectorAll(".agregar");
-
+   
+   alert(
+    "SCRIPT ACTIVO. BOTONES ENCONTRADOS: " +
+    botonesAgregar.length
+);
     const listaCarrito = document.getElementById("lista-carrito");
     const cantidad = document.getElementById("cantidad");
     const total = document.getElementById("total");
@@ -90,144 +94,6 @@ document.addEventListener("DOMContentLoaded", () => {
             .toLowerCase()
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "");
-    }
-
-    // MENSAJE VERDE AL AGREGAR PRODUCTOS
-    let temporizadorNotificacion;
-
-    function mostrarNotificacion(texto) {
-
-        let aviso = document.getElementById("aviso-producto-agregado");
-
-        if (!aviso) {
-            aviso = document.createElement("div");
-            aviso.id = "aviso-producto-agregado";
-
-            aviso.style.position = "fixed";
-            aviso.style.top = "15px";
-            aviso.style.left = "5%";
-            aviso.style.width = "90%";
-            aviso.style.padding = "15px";
-            aviso.style.background = "#dcfce7";
-            aviso.style.color = "#166534";
-            aviso.style.border = "2px solid #86efac";
-            aviso.style.borderRadius = "12px";
-            aviso.style.textAlign = "center";
-            aviso.style.fontWeight = "bold";
-            aviso.style.zIndex = "99999";
-            aviso.style.boxSizing = "border-box";
-            aviso.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-
-            document.body.appendChild(aviso);
-        }
-
-        aviso.textContent = texto;
-        aviso.style.display = "block";
-
-        clearTimeout(temporizadorNotificacion);
-
-        temporizadorNotificacion = setTimeout(() => {
-            aviso.style.display = "none";
-        }, 2800);
-    }
-
-    // MENSAJE DE AGRADECIMIENTO Y NUEVO PEDIDO
-    function mostrarAgradecimiento() {
-
-        const anterior = document.getElementById("mensaje-pedido-exitoso");
-
-        if (anterior) {
-            anterior.remove();
-        }
-
-        const fondo = document.createElement("div");
-        fondo.id = "mensaje-pedido-exitoso";
-
-        fondo.style.position = "fixed";
-        fondo.style.inset = "0";
-        fondo.style.background = "rgba(0,0,0,0.65)";
-        fondo.style.display = "flex";
-        fondo.style.alignItems = "center";
-        fondo.style.justifyContent = "center";
-        fondo.style.padding = "20px";
-        fondo.style.zIndex = "100000";
-
-        const tarjeta = document.createElement("div");
-
-        tarjeta.style.background = "#ffffff";
-        tarjeta.style.padding = "28px 20px";
-        tarjeta.style.borderRadius = "20px";
-        tarjeta.style.textAlign = "center";
-        tarjeta.style.width = "100%";
-        tarjeta.style.maxWidth = "380px";
-        tarjeta.style.boxSizing = "border-box";
-        tarjeta.style.boxShadow = "0 8px 30px rgba(0,0,0,0.2)";
-
-        const titulo = document.createElement("h2");
-        titulo.textContent = "¡Gracias por tu compra! 💚";
-        titulo.style.color = "#166534";
-
-        const mensaje = document.createElement("p");
-        mensaje.textContent =
-            "Tu pedido quedó registrado correctamente. " +
-            "Gracias por elegir Mini Dreamcom de Sabores. " +
-            "¡Esperamos que disfrutes cada bocado!";
-
-        const botonNuevo = document.createElement("button");
-        botonNuevo.type = "button";
-        botonNuevo.textContent = "¡Hacer otro pedido!";
-
-        botonNuevo.style.background = "#16a34a";
-        botonNuevo.style.color = "#ffffff";
-        botonNuevo.style.border = "none";
-        botonNuevo.style.padding = "13px 20px";
-        botonNuevo.style.borderRadius = "10px";
-        botonNuevo.style.fontWeight = "bold";
-        botonNuevo.style.fontSize = "16px";
-        botonNuevo.style.marginTop = "15px";
-        botonNuevo.style.cursor = "pointer";
-
-        botonNuevo.onclick = () => {
-
-            carrito = [];
-
-            actualizar();
-
-            const campos = [
-                "nombre-cliente",
-                "telefono-cliente",
-                "barrio-cliente",
-                "direccion-cliente",
-                "referencia-cliente"
-            ];
-
-            campos.forEach(id => {
-                const campo = document.getElementById(id);
-
-                if (campo) {
-                    campo.value = "";
-                }
-            });
-
-            tipoEntrega.value = "recogida";
-            datosDomicilio.hidden = true;
-
-            actualizarResumen();
-
-            fondo.remove();
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-        };
-
-        tarjeta.appendChild(titulo);
-        tarjeta.appendChild(mensaje);
-        tarjeta.appendChild(botonNuevo);
-
-        fondo.appendChild(tarjeta);
-        document.body.appendChild(fondo);
     }
 
     // RECUPERAR CARRITO
@@ -482,10 +348,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             actualizar();
 
-            mostrarNotificacion(
-                "¡Producto agregado! Tu antojito ya está en el carrito. ¡Gracias por elegirnos!"
-            );
-
             console.log("Producto agregado:", nombre);
         });
     });
@@ -646,3 +508,76 @@ document.addEventListener("DOMContentLoaded", () => {
                         ? null
                         : entrega.tarifa,
                     descuento: entrega.descuento
+                },
+
+                "Modalidad": modalidad,
+                "Barrio": esDomicilio ? barrio : null,
+                "Dirección": esDomicilio ? direccion : null,
+
+                "Total": entrega.pendiente
+                    ? null
+                    : subtotal + entrega.tarifa - entrega.descuento,
+
+                "Estado": "Pendiente"
+            };
+
+            // ABRIR WHATSAPP Y GUARDAR
+            window.open(enlace, "_blank");
+
+            if (!supabaseClient) {
+                alert("WhatsApp se abrió, pero no se encontró la conexión con Supabase. El pedido no se guardó.");
+                return;
+            }
+
+            botonPedido.disabled = true;
+            botonPedido.textContent = "Guardando pedido...";
+
+            try {
+
+                const { error } = await supabaseClient
+                    .from("Pedidos")
+                    .insert([pedido]);
+
+                if (error) {
+                    console.error("Error al guardar el pedido:", error);
+
+                    alert(
+                        "WhatsApp se abrió, pero no se pudo guardar el pedido.\n\n" +
+                        "Detalle del error:\n" + error.message
+                    );
+
+                } else {
+
+                    alert(
+                        "¡Pedido registrado correctamente!\n\n" +
+                        "Tu pedido quedó guardado en la base de datos."
+                    );
+                }
+
+            } catch (error) {
+
+                console.error("Error de conexión con Supabase:", error);
+
+                alert(
+                    "Ocurrió un problema al guardar el pedido:\n\n" +
+                    error.message
+                );
+
+            } finally {
+
+                botonPedido.disabled = false;
+                botonPedido.textContent = "Realizar pedido por WhatsApp";
+            }
+        };
+    }
+
+    // ESTADO INICIAL
+    datosDomicilio.hidden = tipoEntrega.value !== "domicilio";
+
+    actualizar();
+
+    console.log(
+        "Mini Dreamcom: carrito, domicilios y Supabase listos - VERSION 5.4"
+    );
+
+});kR
