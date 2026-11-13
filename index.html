@@ -96,57 +96,47 @@
             padding-top: 25px;
         }
         
-/* MENU DE NAVEGACION */
+
+/* MENU DE TRES RAYITAS */
 #boton-menu {
-    display: none;
     background: #E98A32;
     color: white;
     border: none;
     border-radius: 8px;
     padding: 10px 14px;
-    font-size: 22px;
+    font-size: 25px;
     cursor: pointer;
+}
+
+#menu-navegacion {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 10px;
+    width: 220px;
+    background: white;
+    padding: 15px;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 9998;
+    box-shadow: 0 5px 10px #ccc;
+    border-radius: 10px;
+}
+
+#menu-navegacion.menu-abierto {
+    display: flex;
 }
 
 #menu-navegacion a {
     text-decoration: none;
+    color: #333;
+    padding: 8px;
 }
 
-@media (max-width: 768px) {
-    header {
-        position: relative;
-        flex-wrap: wrap;
-    }
+header {
+    position: relative;
+}
 
-    #boton-menu {
-        display: block;
-    }
-
-    #menu-navegacion {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        box-sizing: border-box;
-        background: white;
-        padding: 15px;
-        flex-direction: column;
-        gap: 16px;
-        z-index: 9998;
-        box-shadow: 0 5px 10px #ccc;
-    }
-
-    #menu-navegacion.menu-abierto {
-        display: flex;
-    }
-
-    #menu-navegacion a {
-        display: block;
-        padding: 8px;
-        color: #333;
-    }
-        }
         
     </style>
 </head>
@@ -156,11 +146,11 @@
     <header>
         
 <header>
+    <div class="logo">🍔 Mini Dreamcom</div>
+
     <button id="boton-menu" aria-label="Abrir menú" aria-expanded="false">
         ☰
     </button>
-
-    <div class="logo">🍔 Mini Dreamcom</div>
 
     <nav id="menu-navegacion">
         <a href="#inicio">🏠 Inicio</a>
@@ -175,6 +165,7 @@
         🛒 Carrito (<span id="cantidad">0</span>)
     </button>
 </header>
+
 
     </header>
 
