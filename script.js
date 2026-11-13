@@ -2,6 +2,7 @@
    CARRITO, DOMICILIOS Y PEDIDOS
    VERSION 5.4 - CORREGIDO Y MEJORADO
 */
+alert("¡SCRIPT.JS ESTÁ FUNCIONANDO!");
 
 document.addEventListener("DOMContentLoaded", () => {
 
