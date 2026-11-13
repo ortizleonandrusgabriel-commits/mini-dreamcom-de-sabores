@@ -1,6 +1,6 @@
 /* MINI DREAMCOM DE SABORES
    CARRITO, DOMICILIOS Y PEDIDOS
-   VERSION 4.0
+   VERSION 5.0 - CON SUPABASE
 */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -32,6 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof CONFIG_DOMICILIOS === "undefined") {
         alert("No se encontró delivery.js. Revisa que esté guardado en el repositorio.");
         return;
+    }
+
+    // Verificar conexión con Supabase
+    const supabaseClient = window.supabaseClient || null;
+
+    if (!supabaseClient) {
+        console.error("No se encontró la conexión con Supabase.");
     }
 
     // Mostrar siempre el punto de atención elegido
@@ -154,7 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
             };
         }
 
-        // El descuento se aplica una sola vez al domicilio
         const descuento = Number.isFinite(informacion.descuento)
             ? Math.min(tarifa, informacion.descuento)
             : 0;
@@ -337,8 +343,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
-    // Preparar pedido para WhatsApp
-    botonPedido.onclick = () => {
+    // Preparar pedido, enviarlo a WhatsApp y guardarlo en Supabase
+    botonPedido.onclick = async () => {
 
         if (carrito.length === 0) {
             alert("Primero agrega productos a tu carrito.");
@@ -428,7 +434,91 @@ document.addEventListener("DOMContentLoaded", () => {
         const enlace = "https://wa.me/" + WHATSAPP +
             "?text=" + encodeURIComponent(mensaje);
 
+        // Abrir WhatsApp inmediatamente
+        // para evitar que el navegador bloquee la ventana
         window.open(enlace, "_blank");
+
+        // Preparar información para Supabase
+        const pedido = {
+            nombre_cliente: nombre || null,
+            telefono: telefono || null,
+
+            productos: {
+                items: carrito.map(producto => ({
+                    nombre: producto.nombre,
+                    precio: producto.precio,
+                    cantidad: producto.cantidad
+                })),
+                punto_recogida: puntoElegido.nombre,
+                referencia: referencia || null,
+                zona: entrega.zona,
+                tarifa_domicilio: entrega.pendiente
+                    ? null
+                    : entrega.tarifa,
+                descuento: entrega.descuento
+            },
+
+            modalidad: modalidad,
+            barrio: esDomicilio ? barrio : null,
+            direccion: esDomicilio ? direccion : null,
+
+            total: entrega.pendiente
+                ? null
+                : subtotal + entrega.tarifa - entrega.descuento
+        };
+
+        // Guardar pedido en Supabase
+        if (!supabaseClient) {
+            alert("WhatsApp se abrió, pero no se pudo guardar el pedido porque falta la conexión con Supabase.");
+            return;
+        }
+
+        botonPedido.disabled = true;
+        botonPedido.textContent = "Guardando pedido...";
+
+        try {
+
+            const { data, error } = await supabaseClient
+                .from("pedidos")
+                .insert([pedido])
+                .select("id");
+
+            if (error) {
+                console.error("Error al guardar el pedido:", error);
+
+                alert(
+                    "Tu pedido se abrió en WhatsApp, pero no se pudo guardar en la base de datos.\n\n" +
+                    "Revisaremos los permisos de Supabase para solucionarlo."
+                );
+
+                return;
+            }
+
+            const numeroPedido = data && data.length > 0
+                ? data[0].id
+                : null;
+
+            alert(
+                "¡Pedido registrado correctamente!\n\n" +
+                (numeroPedido
+                    ? "Número de pedido: " + numeroPedido
+                    : "Tu pedido quedó guardado en la base de datos.")
+            );
+
+        } catch (error) {
+
+            console.error("Error de conexión con Supabase:", error);
+
+            alert(
+                "WhatsApp se abrió, pero ocurrió un problema al guardar el pedido en Supabase."
+            );
+
+        } finally {
+
+            botonPedido.disabled = false;
+            botonPedido.textContent = "Realizar pedido por WhatsApp";
+
+        }
     };
 
     // Estado inicial
@@ -436,6 +526,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     actualizar();
 
-    console.log("Mini Dreamcom: carrito y domicilios listos - VERSION 4.0");
+    console.log("Mini Dreamcom: carrito, domicilios y Supabase listos - VERSION 5.0");
 
 });
