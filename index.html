@@ -503,6 +503,7 @@
 </script>
 
 
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -515,6 +516,17 @@ document.addEventListener("DOMContentLoaded", function () {
     let categoriaActiva = "todos";
     let subcategoriaActiva = "todas";
 
+    // Guardar el primer producto de cada categoría
+    const primerosProductos = new Map();
+
+    productos.forEach(function (producto) {
+        const categoria = producto.dataset.categoria;
+
+        if (categoria && !primerosProductos.has(categoria)) {
+            primerosProductos.set(categoria, producto);
+        }
+    });
+
     function filtrarProductos() {
 
         const texto = buscador
@@ -526,28 +538,57 @@ document.addEventListener("DOMContentLoaded", function () {
             const titulo = producto.querySelector("h3");
             const parrafo = producto.querySelector("p");
 
-            const nombre = titulo ? titulo.textContent.toLowerCase() : "";
-            const descripcion = parrafo ? parrafo.textContent.toLowerCase() : "";
+            const nombre = titulo
+                ? titulo.textContent.toLowerCase()
+                : "";
+
+            const descripcion = parrafo
+                ? parrafo.textContent.toLowerCase()
+                : "";
 
             const categoria = producto.dataset.categoria;
             const subcategoria = producto.dataset.subcategoria;
 
-            const coincideTexto =
-                nombre.includes(texto) || descripcion.includes(texto);
+            let mostrar = false;
 
-            const coincideCategoria =
-                categoriaActiva === "todos" || categoria === categoriaActiva;
+            // El buscador encuentra productos de todas las categorías
+            if (texto !== "") {
 
-            const coincideSubcategoria =
-                categoriaActiva !== "hamburguesas" ||
-                subcategoriaActiva === "todas" ||
-                subcategoria === subcategoriaActiva;
+                mostrar =
+                    nombre.includes(texto) ||
+                    descripcion.includes(texto);
 
-            producto.style.display =
-                coincideTexto && coincideCategoria && coincideSubcategoria
-                ? ""
-                : "none";
+            }
+
+            // Vista principal: un solo producto por categoría
+            else if (categoriaActiva === "todos") {
+
+                mostrar = primerosProductos.get(categoria) === producto;
+
+            }
+
+            // Al entrar en una categoría aparecen todas sus variedades
+            else {
+
+                mostrar = categoria === categoriaActiva;
+
+                // Filtro de variedades de hamburguesas
+                if (
+                    mostrar &&
+                    categoriaActiva === "hamburguesas" &&
+                    subcategoriaActiva !== "todas"
+                ) {
+                    mostrar = subcategoria === subcategoriaActiva;
+                }
+            }
+
+            producto.style.display = mostrar ? "" : "none";
         });
+
+        if (panelSubcategorias) {
+            panelSubcategorias.hidden =
+                categoriaActiva !== "hamburguesas" || texto !== "";
+        }
     }
 
     if (panelSubcategorias) {
@@ -558,6 +599,7 @@ document.addEventListener("DOMContentLoaded", function () {
         buscador.addEventListener("input", filtrarProductos);
     }
 
+    // Botones de categorías principales
     botones.forEach(function (boton) {
 
         boton.addEventListener("click", function () {
@@ -570,11 +612,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             boton.classList.add("activa");
-
-            if (panelSubcategorias) {
-                panelSubcategorias.hidden =
-                    categoriaActiva !== "hamburguesas";
-            }
 
             botonesSubcategoria.forEach(function (b) {
                 b.classList.remove("activa");
@@ -592,6 +629,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // Botones de variedades
     botonesSubcategoria.forEach(function (boton) {
 
         boton.addEventListener("click", function () {
@@ -612,6 +650,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 </script>
+
 
     <!-- ARCHIVOS DE LA APLICACIÓN -->
 <script src="delivery.js"></script>
