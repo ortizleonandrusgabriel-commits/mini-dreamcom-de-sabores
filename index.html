@@ -1254,18 +1254,20 @@ document.addEventListener("DOMContentLoaded", function () {
     pregunta.addEventListener("keydown", function (e) {
         if (e.key === "Enter") responder();
     });
-})();
+})();</script> 
     
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const botonMenu = document.getElementById("boton-menu");
     const menu = document.getElementById("menu-navegacion");
 
+    if (!botonMenu || !menu) return;
+
     botonMenu.addEventListener("click", function () {
         const abierto = menu.classList.toggle("menu-abierto");
 
         botonMenu.textContent = abierto ? "✖" : "☰";
-        botonMenu.setAttribute("aria-expanded", abierto);
+        botonMenu.setAttribute("aria-expanded", String(abierto));
     });
 
     menu.querySelectorAll("a").forEach(function (enlace) {
@@ -1276,9 +1278,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
-</script>
-    
-</script>
-    
+
+
 </body>
-                        </html>
+</html>
